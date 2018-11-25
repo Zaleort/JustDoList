@@ -4,6 +4,7 @@
         <div>
             Busqueda - Etiquetas
         </div>
+        <div></div>
     </div>
 </template>
 

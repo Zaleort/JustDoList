@@ -3,5 +3,12 @@
 
 .container {
     margin: auto;
-    padding: 68px 12px 0 12px;
+    padding: 0 16px;
+    transition: padding 0.33s;
+}
+
+@media only screen and (min-width: $laptop) {
+    .container {
+        padding: 0 21px 0 225 + 21px;
+    }
 }
