@@ -1,6 +1,6 @@
 <template>
     <header class="nav-bar">
-        <i class="icon menu-icon" @click=openMenu>
+        <i class="icon menu-icon" @click="$store.dispatch('toggleNav')">
             <img src="../assets/hamburger.svg" alt="Abrir menú">
         </i>
         <a class="font-white logo" href="/">JustDoList</a>
@@ -15,10 +15,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Header extends Vue {
-    private openMenu(): void {
-        const navMenu: any = document.getElementById('nav-menu');
-        navMenu.classList.toggle('nav-menu-show');
-    }
+
 }
 </script>
 

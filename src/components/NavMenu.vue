@@ -1,12 +1,15 @@
 <template>
-    <nav class="nav-menu" id="nav-menu">
-        <ul class="nav-menu-list">
-            <li><router-link class="nav-menu-link" to="/tareas">Tareas</router-link></li>
-            <li><router-link class="nav-menu-link" to="/completadas">Completadas</router-link></li>
-            <li><router-link class="nav-menu-link" to="/estadisticas">Estadísticas</router-link></li>
-            <li><router-link class="nav-menu-link" to="/grupos">Grupos</router-link></li>
-        </ul>
-    </nav>
+    <div class="nav-container" id="nav-menu">
+        <nav class="nav-menu">
+            <ul class="nav-menu-list">
+                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/tareas">Tareas</router-link></li>
+                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/completadas">Completadas</router-link></li>
+                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/estadisticas">Estadísticas</router-link></li>
+                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/grupos">Grupos</router-link></li>
+            </ul>
+        </nav>
+        <div class="nav-back" @click="$store.dispatch('closeNav')"></div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -14,6 +17,27 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class NavMenu extends Vue {
+    private windowWidth: number = window.innerWidth;
+
+    private getWindowWidth(): void {
+        this.windowWidth = window.innerWidth;
+    }
+
+    private checkWidth(): void {
+        this.getWindowWidth();
+
+        if (this.windowWidth > 1024) {
+            this.$store.dispatch('closeNav');
+        }
+    }
+
+    private mounted() {
+        window.addEventListener('resize', this.checkWidth);
+    }
+
+    private beforeDestroy() {
+        window.removeEventListener('resize', this.checkWidth);
+    }
 
 }
 </script>
@@ -21,18 +45,27 @@ export default class NavMenu extends Vue {
 <style lang="scss">
     @import '../scss/variables';
 
-    .nav-menu {
+    .nav-container {
         position: fixed;
+        display: flex;
+        flex-direction: row;
         left: -225px;
-        width: 225px;
-        height: 100%;
+        transition: transform 0.33s;
+        background-color: rgba(0, 0, 0, 0.33);
+    }
+
+    .nav-menu {
+        min-width: 225px;
+        height: 100vh;
         background-color: $grey100;
         border-right: 1px solid $grey200;
         transition: all 0.33s;
     }
 
     .nav-menu-show {
-        left: 0;
+        width: 175%;
+        height: 100%;
+        transform: translate(225px);
     }
 
     .nav-menu-list {
@@ -63,9 +96,19 @@ export default class NavMenu extends Vue {
         border-left-width: 7px;
     }
 
+    .nav-back {
+        width: 100%;
+        height: 100%;
+    }
+
     @media only screen and (min-width: $laptop) {
-        .nav-menu {
-            left: 0;
+        .nav-container {
+            transform: translate(225px);
+        }
+
+        .nav-menu-show {
+            width: auto;
+            height: auto;
         }
     }
 </style>
