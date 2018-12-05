@@ -1,10 +1,10 @@
 <template>
     <div class="tarea-card">
-        <div class="tarea-card-title">
+        <div class="tarea-card-header">
             <label class="checkbox-group">
                 <input class="checkbox" type="checkbox" name="" id="">
                 <div class="checkbox-indicator"></div>
-                Tarea 1
+                {{ titulo }}
             </label>
             <svg class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path>
@@ -22,7 +22,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class TareaElement extends Vue {
-
+    @Prop({ default: 'Tarea 1' })
+    private titulo: any;
 }
 </script>
 
@@ -31,21 +32,21 @@ export default class TareaElement extends Vue {
     @import '../scss/variables';
 
     .tarea-card {
-        margin-top: 21px;
+        margin-top: 12px;
         background-color: #ffffff;
-        border-left: 7px solid $primary;
+        border-left: 9px solid $primary;
         padding: 21px 16px;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .tarea-card-title {
+    .tarea-card-header {
         display: flex;
         align-items: center;
     }
 
     .expand-icon {
         margin-left: 12px;
-        fill: $grey500;
+        fill: $grey400;
         width: 18px;
         height: 18px;
     }
@@ -57,7 +58,7 @@ export default class TareaElement extends Vue {
     .tarea-options-icon {
         width: 28px;
         height: 28px;
-        fill: $grey500;
+        fill: $grey400;
         margin-left: auto;
     }
 
