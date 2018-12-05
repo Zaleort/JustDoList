@@ -25,6 +25,7 @@ export default class Header extends Vue {
 
 .nav-bar {
     position: sticky;
+    z-index: 100;
     top: 0;
     display: flex;
     justify-content: space-between;
@@ -43,7 +44,7 @@ export default class Header extends Vue {
     text-decoration: none;
 }
 
-.menu-icon:hover {
+.icon:hover {
     cursor: pointer;
 }
 

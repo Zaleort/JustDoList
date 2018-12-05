@@ -48,6 +48,7 @@ export default class NavMenu extends Vue {
     .nav-container {
         position: fixed;
         display: flex;
+        z-index: 100;
         flex-direction: row;
         left: -225px;
         transition: transform 0.33s;
