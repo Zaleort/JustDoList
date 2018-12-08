@@ -20,15 +20,18 @@
                 <TareaLista v-for="listas of $store.state.pendientes.tareas" :key="listas.id" v-bind="listas"/>
             </div>
         </div>
+
+        <TareaPendienteDialog />
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import TareaLista from '../components/TareaLista.vue';
+import TareaPendienteDialog from '../components/TareaPendienteDialog.vue';
 
 @Component({
-    components: { TareaLista },
+    components: { TareaLista, TareaPendienteDialog },
 
 })
 
