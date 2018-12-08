@@ -6,21 +6,24 @@ if (process.env.NODE_ENV === 'production') {
     register(`${process.env.BASE_URL}service-worker.js`, {
         ready() {
         console.log(
-            'App is being served from cache by a service worker.\n' +
-            'For more details, visit https://goo.gl/AFskqB',
+            'La aplicación se está ejecutando desde caché por un Service Worker.\n' +
+            'Para más información, visita https://goo.gl/AFskqB',
         );
         },
         cached() {
-            console.log('Content has been cached for offline use.');
+            console.log('El contenido se ha añadido a la caché para su uso offline.');
+        },
+        updatefound() {
+            console.log('Descargando actualizaciones...');
         },
         updated() {
-            console.log('New content is available; please refresh.');
+            console.log('Actualización disponible, por favor, refresca la página.');
         },
         offline() {
-            console.log('No internet connection found. App is running in offline mode.');
+            console.log('Sin conexión a internet. La aplicación se está ejecutando en modo offline.');
         },
         error(error) {
-            console.error('Error during service worker registration:', error);
+            console.error('Error durante el registro del Service Worker:', error);
         },
     });
 }

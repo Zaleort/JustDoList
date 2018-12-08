@@ -1,18 +1,27 @@
 <template>
     <div class="tarea-card">
         <div class="tarea-card-header">
-            <label class="checkbox-group">
-                <input class="checkbox" type="checkbox" name="" id="">
-                <div class="checkbox-indicator"></div>
-                {{ titulo }}
-            </label>
-            <svg class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <div class="checkbox-group">
+                <button class="checkbox-button checkbox-indicator"></button>
+                <p class="checkbox-title" :for=id>{{ titulo }}</p>
+            </div>
+            <svg v-if=hasSubTareas class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path>
             </svg>
             <svg class="icon tarea-options-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0h24v24H0z" fill="none"/>
                 <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
+        </div>
+        <div v-if=hasSubTareas class="sub-tareas">
+            <label v-for="subTarea of subTareas" :key="subTarea.id" class="checkbox-group--sm">
+                <input class="checkbox" type="checkbox" name="" id="" :checked="subTarea.checked">
+                <div class="checkbox-indicator--sm"></div>
+                <p class="checkbox-title">{{ subTarea.titulo }}</p>
+            </label>
+        </div>
+        <div class="tarea-card-footer">
+            
         </div>
     </div>
 </template>
@@ -22,8 +31,32 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class TareaElement extends Vue {
+    @Prop()
+    private id!: number;
+
     @Prop({ default: 'Tarea 1' })
-    private titulo: any;
+    private titulo!: string;
+
+    @Prop()
+    private subTareas!: object[];
+
+    @Prop({ default: false })
+    private hasSubTareas!: boolean;
+
+    @Prop()
+    private tags!: object[];
+
+    @Prop()
+    private dateCreation!: string;
+
+    @Prop()
+    private dateUpdated!: string;
+
+    @Prop()
+    private dateDeadline!: string;
+
+    @Prop()
+    private dateFinalized!: string;
 }
 </script>
 
@@ -45,10 +78,9 @@ export default class TareaElement extends Vue {
     }
 
     .expand-icon {
-        margin-left: 12px;
         fill: $grey400;
-        width: 18px;
-        height: 18px;
+        min-width: 18px;
+        min-height: 18px;
     }
 
     .expand-icon.expanded {
@@ -56,16 +88,27 @@ export default class TareaElement extends Vue {
     }
 
     .tarea-options-icon {
-        width: 28px;
-        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
         fill: $grey400;
         margin-left: auto;
     }
 
-    .checkbox-group {
+    .checkbox-group, .checkbox-group--sm {
         display: flex;
         align-items: center;
         cursor: pointer;
+    }
+
+    .checkbox-group--sm {
+        margin-top: 12px;
+        margin-left: 36px;
+        font-size: 0.9em;
+    }
+
+    .checkbox-title {
+        margin: 0 12px 0 7px;
+        word-wrap: break-word;
     }
 
     .checkbox {
@@ -74,34 +117,58 @@ export default class TareaElement extends Vue {
         opacity: 0;
     }
 
-    .checkbox-indicator {
+    .checkbox-button {
+        padding: 0;
+        background-color: #fff;
+
+    }
+
+    .checkbox-indicator, .checkbox-indicator--sm {
         position: relative;
-        margin-right: 7px;
-        width: 27px;
-        height: 27px;
         border: 1px solid $grey300;
         transition: all 0.1s;
     }
 
-    .checkbox-indicator::after {
+    .checkbox-indicator {
+        min-width: 27px;
+        min-height: 27px;
+    }
+
+    .checkbox-indicator--sm {
+        min-width: 18px;
+        min-height: 18px;
+    }
+
+    .checkbox-indicator::after, .checkbox-indicator--sm::after {
         position: absolute;
         opacity: 0;
         content: '';
+        transform: rotate(45deg);
+        border: solid $primary;
+        transition: all 0.1s;
+    }
+
+    .checkbox-indicator::after {
         top: 2px;
         left: 8px;
         width: 7px;
         height: 15px;
-        transform: rotate(45deg);
-        border: solid $primary;
         border-width: 0 3px 3px 0;
-        transition: all 0.1s;
     }
 
-    .checkbox-group input:checked ~ .checkbox-indicator {
+    .checkbox-indicator--sm::after {
+        top: 1px;
+        left: 4px;
+        width: 5px;
+        height: 10px;
+        border-width: 0 2px 2px 0;
+    }
+
+    .checkbox:checked ~ .checkbox-indicator, .checkbox:checked ~ .checkbox-indicator--sm {
         border-color: $primary;
     } 
 
-    .checkbox-group input:checked ~ .checkbox-indicator::after {
+    .checkbox:checked ~ .checkbox-indicator::after, .checkbox:checked ~ .checkbox-indicator--sm::after {
         opacity: 1;
     }
 </style>

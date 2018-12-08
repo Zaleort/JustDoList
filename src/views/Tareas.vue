@@ -8,16 +8,16 @@
             <div class="tareas-diarias-section">
                 <div class="tareas-header">
                     <h2 class="tareas-title">Tareas diarias</h2>
-                    <img @click=addTarea class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
+                    <img @click="$store.dispatch('diarias/addTarea', { id: 1, titulo: `Tarea 1` })" class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
                 </div>
-                <TareaLista v-for="listas of tareasDiarias" :key="listas.id" :titulo="listas.titulo"/>
+                <TareaLista v-for="listas of $store.state.diarias.tareas" :key="listas.id" :titulo="listas.titulo"/>
             </div>
             <div class="tareas-pendientes-section">
                 <div class="tareas-header">
                     <h2 class="tareas-title">Tareas pendientes</h2>
-                    <img @click=addTarea class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
+                    <img @click="$store.dispatch('pendientes/addTarea', { id: 1, titulo: `Tarea 1` })" class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
                 </div>
-                <TareaLista />
+                <TareaLista v-for="listas of $store.state.pendientes.tareas" :key="listas.id" v-bind="listas"/>
             </div>
         </div>
     </div>
@@ -33,12 +33,7 @@ import TareaLista from '../components/TareaLista.vue';
 })
 
 export default class Tareas extends Vue {
-    private tareasDiarias = [ {id: 1, titulo: 'Tarea 1'} ];
-    private numTarea = 1;
 
-    private addTarea(): void {
-        this.tareasDiarias.push({ id: this.numTarea += 1, titulo: `Tarea ${this.numTarea}` });
-    }
 }
 </script>
 
