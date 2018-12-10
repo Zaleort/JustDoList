@@ -3,9 +3,9 @@
         <div class="tarea-card-header">
             <div class="checkbox-group">
                 <button class="checkbox-button checkbox-indicator"></button>
-                <p class="checkbox-title" :for=id>{{ titulo }}</p>
+                <p class="checkbox-title">{{ titulo }}</p>
             </div>
-            <svg v-if=hasSubTareas class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <svg v-if="hasSubTareas" class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path>
             </svg>
             <svg class="icon tarea-options-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -13,7 +13,7 @@
                 <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
         </div>
-        <div v-if=hasSubTareas class="sub-tareas">
+        <div v-if="hasSubTareas" class="sub-tareas">
             <label v-for="subTarea of subTareas" :key="subTarea.id" class="checkbox-group--sm">
                 <input class="checkbox" type="checkbox" name="" id="" :checked="subTarea.checked">
                 <div class="checkbox-indicator--sm"></div>
@@ -107,6 +107,7 @@ export default class TareaElement extends Vue {
     }
 
     .checkbox-title {
+        font-family: $montserrat;
         margin: 0 12px 0 7px;
         word-wrap: break-word;
     }

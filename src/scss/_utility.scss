@@ -64,10 +64,11 @@
     transition: padding 0.33s;
 }
 
+// Diálogos
+
 .dialog-container {
-    position: absolute;
-    display: flex;
-    align-items: center;
+    position: fixed;
+    display: none;
     top: 0;
     left: 0;
     right: 0;
@@ -76,6 +77,12 @@
     z-index: 200;
     background-color: black;
     background-color: rgba(0, 0, 0, 0.33);
+    transition: all 0.25s ease-out;
+}
+
+.dialog-container.show {
+    display: flex;
+    align-items: center;
 }
 
 .dialog-header {
@@ -92,6 +99,7 @@
 }
 
 .dialog-content {
+    z-index: 201;
     margin: 0 auto;
     max-width: $tablet;
     background-color: #fefefe;
@@ -102,6 +110,8 @@
     display: flex;
     justify-content: center;
 }
+
+// Botones
 
 .button {
     border: 0;
@@ -133,7 +143,34 @@
 .button-success:hover { background-color: $green800; }
 .button-danger:hover { background-color: $red800; }
 
+// Mensajes de alerta
 
+.alert {
+    padding: 16px;
+    border-left: 5px solid;
+    background-color: white;
+}
+
+.alert-error {
+    @extend .alert;
+    color: $red500;
+    border-color: $red500;
+    background-color: $red50;
+}
+
+.alert-success {
+    @extend .alert;
+    color: $green500;
+    border-color: $green500;
+    background-color: $green50;
+}
+
+.alert-info {
+    @extend .alert;
+    color: $blue500;
+    border-color: $blue500;
+    background-color: $blue50;
+}
 
 @media only screen and (min-width: $laptop) {
     .container {

@@ -15,9 +15,9 @@
             <div class="tareas-pendientes-section">
                 <div class="tareas-header">
                     <h2 class="tareas-title">Tareas pendientes</h2>
-                    <img @click="$store.dispatch('pendientes/addTarea', { id: 1, titulo: `Tarea 1` })" class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
+                    <img @click="$store.dispatch('openDialog', 'tarea-pendiente-dialog')" class="icon add-icon" src="../assets/add_circle.svg" alt="Añadir tarea">
                 </div>
-                <TareaLista v-for="listas of $store.state.pendientes.tareas" :key="listas.id" v-bind="listas"/>
+                <TareaLista v-for="listas in $store.state.pendientes.tareas" :key="listas.id" v-bind="listas"/>
             </div>
         </div>
 

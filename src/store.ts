@@ -1,52 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import TareasPendientesModule from './store_modules/TareasPendientesModule';
+import TareasDiariasModule from './store_modules/TareasDiariasModule';
 
 Vue.use(Vuex);
 
-const tareasDiarias = {
-    namespaced: true,
-    state: {
-        tareas: [ {id: 1, titulo: 'Tarea 1'} ],
-    },
-
-    mutations: {
-        add(state: any, tarea: object) {
-            state.tareas.push(tarea);
-        },
-    },
-
-    actions: {
-        addTarea: (context: any, tarea: object) => {
-            context.commit('add', tarea);
-        },
-    },
-};
-
-const tareasPendientes = {
-    namespaced: true,
-    state: {
-        tareas: [ {id: 1, titulo: 'Tarea 1', hasSubTareas: true,
-            subTareas: [{ id: 1, titulo: 'Sub Tarea 1', checked: true } ],
-        } ],
-    },
-
-    mutations: {
-        add(state: any, tarea: object) {
-            state.tareas.push(tarea);
-        },
-    },
-
-    actions: {
-        addTarea: (context: any, tarea: object) => {
-            context.commit('add', tarea);
-        },
-    },
-};
-
 export default new Vuex.Store({
     modules: {
-        diarias: tareasDiarias,
-        pendientes: tareasPendientes,
+        diarias: TareasDiariasModule,
+        pendientes: TareasPendientesModule,
     },
 
     state: {
@@ -64,6 +26,22 @@ export default new Vuex.Store({
         closeNav: () => {
             const navMenu: any = document.getElementById('nav-menu');
             navMenu.classList.remove('nav-menu-show');
+        },
+
+        closeDialog: (context: any, dialog: string) => {
+            const e = document.getElementById(dialog);
+
+            if (e) {
+                e.classList.remove('show');
+            }
+        },
+
+        openDialog: (context: any, dialog: string) => {
+            const e = document.getElementById(dialog);
+
+            if (e) {
+                e.classList.add('show');
+            }
         },
     },
 });
