@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import TareasPendientesModule from './store_modules/TareasPendientesModule';
-import TareasDiariasModule from './store_modules/TareasDiariasModule';
+import TaskPendingModule from './store_modules/TaskPendingModule';
+import TaskDailyModule from './store_modules/TaskDailyModule';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     modules: {
-        diarias: TareasDiariasModule,
-        pendientes: TareasPendientesModule,
+        daily: TaskDailyModule,
+        pending: TaskPendingModule,
     },
 
     state: {

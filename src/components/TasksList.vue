@@ -1,26 +1,26 @@
 <template>
-    <div class="tarea-card">
-        <div class="tarea-card-header">
+    <div class="task-card">
+        <div class="task-card-header">
             <div class="checkbox-group">
                 <button class="checkbox-button checkbox-indicator"></button>
-                <p class="checkbox-title">{{ titulo }}</p>
+                <p @click="openEditTarea" class="checkbox-title">{{ name }}</p>
             </div>
-            <svg v-if="hasSubTareas" class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <svg v-if="hasSubTasks" class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path>
             </svg>
-            <svg class="icon tarea-options-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="icon task-options-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0h24v24H0z" fill="none"/>
                 <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
         </div>
-        <div v-if="hasSubTareas" class="sub-tareas">
-            <label v-for="subTarea of subTareas" :key="subTarea.id" class="checkbox-group--sm">
-                <input class="checkbox" type="checkbox" name="" id="" :checked="subTarea.checked">
+        <div v-if="hasSubTasks">
+            <label v-for="subTask of subTasks" :key="subTask.id" class="checkbox-group--sm">
+                <input class="checkbox" type="checkbox" name="" id="" :checked="subTask.checked">
                 <div class="checkbox-indicator--sm"></div>
-                <p class="checkbox-title">{{ subTarea.titulo }}</p>
+                <p class="checkbox-title">{{ subTask.name }}</p>
             </label>
         </div>
-        <div class="tarea-card-footer">
+        <div class="task-card-footer">
             
         </div>
     </div>
@@ -28,20 +28,18 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import '../interfaces/ISubTask';
 
 @Component
-export default class TareaElement extends Vue {
+export default class TasksList extends Vue {
     @Prop()
-    private id!: number;
+    private id!: string;
 
     @Prop({ default: 'Tarea 1' })
-    private titulo!: string;
+    private name!: string;
 
     @Prop()
-    private subTareas!: object[];
-
-    @Prop({ default: false })
-    private hasSubTareas!: boolean;
+    private subTasks!: ISubTask[];
 
     @Prop()
     private tags!: object[];
@@ -57,6 +55,18 @@ export default class TareaElement extends Vue {
 
     @Prop()
     private dateFinalized!: string;
+
+    get hasSubTasks() {
+        return this.subTasks && this.subTasks.length > 0;
+    }
+
+    private openEditTarea(): void {
+        (document.getElementById('tarea-pendiente-id') as HTMLInputElement).value = this.id;
+        (document.getElementById('tarea-pendiente-titulo') as HTMLInputElement).value = this.name;
+        (document.getElementById('tarea-pendiente-subtarea') as HTMLInputElement).value = this.subTasks[0].name;
+
+        this.$store.dispatch('openDialog', 'tarea-pendiente-dialog');
+    }
 }
 </script>
 
@@ -64,7 +74,7 @@ export default class TareaElement extends Vue {
 <style lang="scss">
     @import '../scss/variables';
 
-    .tarea-card {
+    .task-card {
         margin-top: 12px;
         background-color: #ffffff;
         border-left: 9px solid $primary;
@@ -72,7 +82,7 @@ export default class TareaElement extends Vue {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .tarea-card-header {
+    .task-card-header {
         display: flex;
         align-items: center;
     }
@@ -87,7 +97,7 @@ export default class TareaElement extends Vue {
         transform: rotate(180deg);
     }
 
-    .tarea-options-icon {
+    .task-options-icon {
         min-width: 28px;
         min-height: 28px;
         fill: $grey400;

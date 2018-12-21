@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Tareas from './views/Tareas.vue';
+import TasksView from './views/TasksView.vue';
 
 Vue.use(Router);
 
@@ -9,7 +9,7 @@ export default new Router({
         {
             path: '/tareas',
             name: 'tareas',
-            component: Tareas,
+            component: TasksView,
         },
         {
             path: '/about',
