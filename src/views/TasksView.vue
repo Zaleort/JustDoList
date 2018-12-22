@@ -22,7 +22,7 @@
             <section class="tasks-pending-section">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas pendientes</h2>
-                    <img @click="$store.dispatch('openDialog', 'tarea-pendiente-dialog')" 
+                    <img @click="$store.dispatch('openDialog', 'task-pending-dialog')" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tare pendiente">

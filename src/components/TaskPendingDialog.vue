@@ -1,8 +1,8 @@
 <template>
-    <div class="dialog-container" id="tarea-pendiente-dialog">
+    <div class="dialog-container" id="task-pending-dialog">
         <div class="dialog-content">
             <div class="dialog-header">
-                <h1 id="tarea-pendiente-header-title" class="font-white dialog-title">Nueva tarea pendiente</h1>
+                <h1 id="task-pending-header-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
             </div>
             <form id="task-pending-form" class="dialog-form" @submit.prevent="procesarTarea">
                 <div></div>
@@ -63,7 +63,7 @@ export default class TaskPendingDialog extends Vue {
     }
 
     private closeDialog(): void {
-        this.$store.dispatch('closeDialog', 'tarea-pendiente-dialog');
+        this.$store.dispatch('closeDialog', 'task-pending-dialog');
         const form = document.getElementById('task-pending-form') as HTMLFormElement;
 
         form.reset();
