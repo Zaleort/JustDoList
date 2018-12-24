@@ -9,12 +9,18 @@
             <section class="tasks-daily-section">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas diarias</h2>
-                    <img @click="$store.dispatch('daily/addTask', { id: 1, name: `Tarea 1` })" 
+                    <img @click="openDailyDialog" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tarea diaria">
                 </div>
-                <TasksList v-for="task of $store.state.daily.tasks" :key="task.id" :titulo="task.name"/>
+                <div class="alert-info mt-1" v-if="dailyTasks.length === 0 || !dailyTasks">
+                    <p>
+                        Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarian se reinician automáticamente
+                        todos los días y llevan un seguimiento de tu racha.
+                    </p>
+                </div>
+                <Task v-for="task of dailyTasks" :key="task.id" v-bind="task"/>
             </section>
 
 
@@ -22,12 +28,18 @@
             <section class="tasks-pending-section">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas pendientes</h2>
-                    <img @click="$store.dispatch('openDialog', 'task-pending-dialog')" 
+                    <img @click="openPendingDialog" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tare pendiente">
                 </div>
-                <TasksList v-for="task in $store.state.pending.tasks" :key="task.id" v-bind="task"/>
+                <div class="alert-info mt-1" v-if="pendingTasks.length === 0 || !pendingTasks">
+                    <p>
+                        Haz click en el botón + para añadir una nueva tarea pendiente. Puedes especificar un plazo para terminar
+                        las tareas pendientes, y una vez completadas se moverán a tu historial de tareas completadas.
+                    </p>
+                </div>
+                <Task v-for="task in pendingTasks" :key="task.id" v-bind="task"/>
             </section>
         </section>
 
@@ -37,16 +49,32 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import TasksList from '../components/TasksList.vue';
+import Task from '../components/Task.vue';
 import TaskPendingDialog from '../components/TaskPendingDialog.vue';
+import { mapState } from 'vuex';
 
 @Component({
-    components: { TasksList, TaskPendingDialog },
+    components: { Task, TaskPendingDialog },
 
+    computed: {
+        ...mapState({
+            pendingTasks: (state) => (state as any).pending.tasks,
+            pendingCurrentTask: (state) => (state as any).pending.current,
+            dailyTasks: (state) => (state as any).daily.tasks,
+        }),
+    },
 })
 
 export default class TasksView extends Vue {
+    private openDailyDialog() {
+        document.getElementById('task-daily-heading')!.innerHTML = 'Crear nueva tarea diaria';
+        this.$store.dispatch('openDialog', 'task-daily-dialog');
+    }
 
+    private openPendingDialog() {
+        document.getElementById('task-pending-heading')!.innerHTML = 'Crear nueva tarea pendiente';
+        this.$store.dispatch('openDialog', 'task-pending-dialog');
+    }
 }
 </script>
 

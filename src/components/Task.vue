@@ -13,6 +13,7 @@
                 <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
         </div>
+        <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div v-if="hasSubTasks">
             <label v-for="subTask of subTasks" :key="subTask.id" class="checkbox-group--sm">
                 <input class="checkbox" type="checkbox" name="" id="" :checked="subTask.checked">
@@ -28,43 +29,43 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import '../interfaces/ISubTask';
 
 @Component
-export default class TasksList extends Vue {
-    @Prop()
-    private id!: string;
+export default class Task extends Vue {
+    @Prop() private id!: string;
+    @Prop() private name!: string;
+    @Prop() private notes!: string;
+    @Prop() private subTasks!: ISubTask[];
+    @Prop() private tags!: object[];
+    @Prop() private dateCreation!: string;
+    @Prop() private dateUpdated!: string;
+    @Prop() private dateDeadline!: string;
+    @Prop() private dateFinalized!: string;
 
-    @Prop({ default: 'Tarea 1' })
-    private name!: string;
+    get hasNotes(): boolean {
+        return this.notes.length > 0 || this.notes.trim().length > 0;
+    }
 
-    @Prop()
-    private subTasks!: ISubTask[];
-
-    @Prop()
-    private tags!: object[];
-
-    @Prop()
-    private dateCreation!: string;
-
-    @Prop()
-    private dateUpdated!: string;
-
-    @Prop()
-    private dateDeadline!: string;
-
-    @Prop()
-    private dateFinalized!: string;
-
-    get hasSubTasks() {
+    get hasSubTasks(): boolean {
         return this.subTasks && this.subTasks.length > 0;
+    }
+
+    private getTaskObject(): ITaskPending {
+        return {
+            id: this.id,
+            name: this.name,
+            notes: this.notes,
+            subTasks: JSON.parse(JSON.stringify(this.subTasks)),
+        };
     }
 
     private openEditTask(): void {
         (document.getElementById('task-pending-id') as HTMLInputElement).value = this.id;
         (document.getElementById('task-pending-name') as HTMLInputElement).value = this.name;
-        (document.getElementById('task-pending-subtask') as HTMLInputElement).value = this.subTasks[0].name;
+        (document.getElementById('task-pending-notes') as HTMLInputElement).value = this.notes;
+        document.getElementById('task-pending-heading')!.innerHTML = 'Editar tarea pendiente';
 
+        this.$store.dispatch('pending/updateCurrent', this.getTaskObject());
         this.$store.dispatch('openDialog', 'task-pending-dialog');
     }
 }
@@ -75,7 +76,7 @@ export default class TasksList extends Vue {
     @import '../scss/variables';
 
     .task-card {
-        margin-top: 12px;
+        margin-top: 1em;
         background-color: #ffffff;
         border-left: 9px solid $primary;
         padding: 21px 16px;
@@ -85,6 +86,12 @@ export default class TasksList extends Vue {
     .task-card-header {
         display: flex;
         align-items: center;
+    }
+
+    .task-notes {
+        font-size: 0.8em;
+        color: $grey700;
+        margin-left: 36px;
     }
 
     .expand-icon {
@@ -120,6 +127,7 @@ export default class TasksList extends Vue {
         font-family: $montserrat;
         margin: 0 12px 0 7px;
         word-wrap: break-word;
+        transition: all 0.1s ease;
     }
 
     .checkbox {
@@ -181,5 +189,9 @@ export default class TasksList extends Vue {
 
     .checkbox:checked ~ .checkbox-indicator::after, .checkbox:checked ~ .checkbox-indicator--sm::after {
         opacity: 1;
+    }
+
+    .checkbox:checked ~ .checkbox-title {
+        color: $grey400;
     }
 </style>

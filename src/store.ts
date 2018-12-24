@@ -6,6 +6,7 @@ import TaskDailyModule from './store_modules/TaskDailyModule';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+    strict: true,
     modules: {
         daily: TaskDailyModule,
         pending: TaskPendingModule,

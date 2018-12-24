@@ -11,19 +11,16 @@ import Vue from 'vue';
 export default {
     namespaced: true,
     state: {
-        tasks: [
-            {
-                id: '1',
-                name: 'Tarea 1',
-                subTasks: [
-                    {
-                        id: '1',
-                        name: 'SubTarea 1',
-                        checked: true,
-                    },
-                ],
-            },
-        ] as ITaskPending[],
+        tasks: [] as ITaskPending[],
+
+        // Al hacer click en editar tarea, se poblará este objeto para mostrar sus datos
+        // correctamente en el formulario de edición
+        current: {
+            id: '',
+            name: '',
+            notes: '',
+            subTasks: [],
+        } as ITaskPending,
     },
 
     mutations: {
@@ -40,6 +37,14 @@ export default {
                 Vue.set(state.tasks, i, task);
             }
         },
+
+        updateCurrent(state: any, task: ITaskPending) {
+            state.current = task;
+        },
+
+        addCurrentSubTask(state: any, task: ISubTask) {
+            state.current.subTasks.push(task);
+        },
     },
 
     actions: {
@@ -49,6 +54,14 @@ export default {
 
         updateTask: (context: any, task: ITaskPending) => {
             context.commit('update', task);
+        },
+
+        updateCurrent: (context: any, task: ITaskPending) => {
+            context.commit('updateCurrent', task);
+        },
+
+        addCurrentSubTask: (context: any, task: ISubTask) => {
+            context.commit('addCurrentSubTask', task);
         },
     },
 };

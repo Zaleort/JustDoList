@@ -1,3 +1,5 @@
+import Vue from 'vue';
+import '../interfaces/ITaskDaily';
 
 /*
     Módulo de las Tareas Diarias. Aquí se almacenará en un array las tareas disponibles
@@ -9,18 +11,32 @@
 export default {
     namespaced: true,
     state: {
-        tasks: [ {id: 1, titulo: 'Tarea 1'} ],
+        tasks: [] as ITaskDaily[],
     },
 
     mutations: {
-        add(state: any, task: object) {
+        add(state: any, task: ITaskDaily) {
             state.tasks.push(task);
+        },
+
+        update(state: any, task: ITaskDaily) {
+            const i = state.tasks.findIndex((e: ITaskDaily) => {
+                return e.id === task.id;
+            });
+
+            if (i >= 0) {
+                Vue.set(state.tasks, i, task);
+            }
         },
     },
 
     actions: {
-        addTask: (context: any, task: object) => {
+        addTask: (context: any, task: ITaskDaily) => {
             context.commit('add', task);
+        },
+
+        updateTask: (context: any, task: ITaskDaily) => {
+            context.commit('update', task);
         },
     },
 };

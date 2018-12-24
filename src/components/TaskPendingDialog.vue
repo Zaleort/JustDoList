@@ -2,9 +2,9 @@
     <div class="dialog-container" id="task-pending-dialog">
         <div class="dialog-content">
             <div class="dialog-header">
-                <h1 id="task-pending-header-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
+                <h1 id="task-pending-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
             </div>
-            <form id="task-pending-form" class="dialog-form" @submit.prevent="procesarTarea">
+            <div id="task-pending-form" class="dialog-form">
                 <div></div>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Tarea</p>
@@ -16,44 +16,73 @@
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Subtareas</p>
-                    <input id="task-pending-subtask" class="dialog-form-input" type="text">
+                    <input v-for="subTask of currentSubTasks" :key="subTask.id"
+                        class="dialog-form-input pending-subtasks-list" 
+                        type="text"
+                        :value="subTask.name"
+                    >
+                    <input @keydown.enter="addSubTask" 
+                        id="task-pending-subtask"
+                        class="dialog-form-input pending-subtasks-list" 
+                        type="text"
+                        placeholder="Añadir nueva subtarea">
                 </label>
                 <div class="dialog-footer">
                     <input type="hidden" id="task-pending-id" value="">
                     <input @click="closeDialog" class="mr-1 button button-alpha font-danger" type="button" value="Cancelar">
-                    <input id="task-pending-submit" class="button button-success" type="submit" value="Crear tarea">
+                    <input @click="procesarTarea" id="task-pending-submit" class="button button-success" type="submit" value="Crear tarea">
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
 @Component
 export default class TaskPendingDialog extends Vue {
+    get currentTask() {
+        return this.$store.state.pending.current;
+    }
+
+    get currentSubTasks() {
+        return this.$store.state.pending.current.subTasks;
+    }
+
+    private addSubTask(): void {
+        let task: ISubTask;
+
+        const taskId = `${this.currentSubTasks.length + 1}`;
+        const taskName = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
+
+        task = {
+            id: taskId,
+            name: taskName,
+            checked: false,
+        };
+
+        this.$store.dispatch('pending/addCurrentSubTask', task);
+        (document.getElementById('task-pending-subtask') as HTMLInputElement).value = '';
+    }
+
     private procesarTarea(): void {
         const taskId = (document.getElementById('task-pending-id') as HTMLInputElement).value;
         const taskName = (document.getElementById('task-pending-name') as HTMLInputElement).value;
-        const nota = (document.getElementById('task-pending-notes') as HTMLInputElement).value;
-        const subTaskName = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
+        const taskNotes = (document.getElementById('task-pending-notes') as HTMLInputElement).value;
+        const subTasks = this.currentSubTasks;
 
         const task: ITaskPending = {
             id: taskId,
             name: taskName,
-            subTasks: [
-                {
-                    id: '1',
-                    name: subTaskName,
-                    checked: false,
-                },
-            ],
+            notes: taskNotes,
+            subTasks: subTasks,
         };
 
         if (!task.id) {
             // Generar y asignar ID
             // Añadir tarea
+            task.id = `${this.$store.state.pending.tasks.length + 1}`;
             this.$store.dispatch('pending/addTask', task);
         } else {
             this.$store.dispatch('pending/updateTask', task);
@@ -64,10 +93,15 @@ export default class TaskPendingDialog extends Vue {
 
     private closeDialog(): void {
         this.$store.dispatch('closeDialog', 'task-pending-dialog');
-        const form = document.getElementById('task-pending-form') as HTMLFormElement;
+        this.$store.dispatch('pending/updateCurrent', { id: '', name: '', notes: '', subTasks: [] });
+        this.resetDialog();
+    }
 
-        form.reset();
-        (document.getElementById('task-pending-id') as HTMLInputElement)!.value = '';
+    private resetDialog(): void {
+        (document.getElementById('task-pending-id') as HTMLInputElement).value = '';
+        (document.getElementById('task-pending-name') as HTMLInputElement).value = '';
+        (document.getElementById('task-pending-notes') as HTMLInputElement).value = '';
+        (document.getElementById('task-pending-subtask') as HTMLInputElement)!.value = '';
     }
 }
 </script>
@@ -96,6 +130,14 @@ export default class TaskPendingDialog extends Vue {
         font-family: $montserrat;
         border: 1px solid $grey300;
         border-radius: 3px;
+    }
+
+    .pending-subtasks-list {
+        padding-left: 12px;
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid $grey300;
+        background-color: #fefefe;
     }
 
 </style>

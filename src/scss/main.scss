@@ -5,11 +5,16 @@
 
 body {
     font-family: $raleway;
+    color: $grey900;
     background-color: #fdfdfd;
 }
 
 h1 {
     font-size: 2.3em;
+}
+
+p {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .icon {
