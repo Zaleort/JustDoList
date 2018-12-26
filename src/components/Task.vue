@@ -15,11 +15,7 @@
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div v-if="hasSubTasks">
-            <label v-for="subTask of subTasks" :key="subTask.id" class="checkbox-group--sm">
-                <input class="checkbox" type="checkbox" name="" id="" :checked="subTask.checked">
-                <div class="checkbox-indicator--sm"></div>
-                <p class="checkbox-title">{{ subTask.name }}</p>
-            </label>
+            <SubTask v-for="subTask in subTasks" :key="subTask.id" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
         <div class="task-card-footer">
             
@@ -29,15 +25,19 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import SubTask from './SubTask.vue';
 
-@Component
+@Component({
+    components: { SubTask },
+})
 export default class Task extends Vue {
     @Prop() private id!: string;
+    @Prop() private type!: string;
     @Prop() private name!: string;
     @Prop() private notes!: string;
     @Prop() private subTasks!: ISubTask[];
     @Prop() private tags!: object[];
-    @Prop() private dateCreation!: string;
+    @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
     @Prop() private dateFinalized!: string;
@@ -51,6 +51,8 @@ export default class Task extends Vue {
     }
 
     private getTaskObject(): ITaskPending {
+        // Se intenta evitar pasar referencias, de modo que no afecte directamente a state.task
+
         return {
             id: this.id,
             name: this.name,
@@ -60,6 +62,8 @@ export default class Task extends Vue {
     }
 
     private openEditTask(): void {
+        // @TODO Usar type para diferenciar entre Pending y Daily
+
         (document.getElementById('task-pending-id') as HTMLInputElement).value = this.id;
         (document.getElementById('task-pending-name') as HTMLInputElement).value = this.name;
         (document.getElementById('task-pending-notes') as HTMLInputElement).value = this.notes;
@@ -78,6 +82,7 @@ export default class Task extends Vue {
     .task-card {
         margin-top: 1em;
         background-color: #ffffff;
+        border: 1px solid $grey200;
         border-left: 9px solid $primary;
         padding: 21px 16px;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);

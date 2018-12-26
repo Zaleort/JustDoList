@@ -154,22 +154,22 @@
 
 .alert-error {
     @extend .alert;
-    color: $red500;
-    border-color: $red500;
+    color: $red800;
+    border-color: $red800;
     background-color: $red50;
 }
 
 .alert-success {
     @extend .alert;
-    color: $green500;
-    border-color: $green500;
+    color: $green800;
+    border-color: $green800;
     background-color: $green50;
 }
 
 .alert-info {
     @extend .alert;
-    color: $blue500;
-    border-color: $blue500;
+    color: $blue800;
+    border-color: $blue800;
     background-color: $blue50;
 }
 

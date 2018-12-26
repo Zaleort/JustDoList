@@ -2,7 +2,7 @@
     <main class="container">
         <h1 class="font-primary">Tareas</h1>
         <div>
-            Busqueda - Etiquetas
+            Búsqueda - Etiquetas
         </div>
         <section class="tasks-section">
             <!-- Tareas Pendientes -->
@@ -16,8 +16,8 @@
                 </div>
                 <div class="alert-info mt-1" v-if="dailyTasks.length === 0 || !dailyTasks">
                     <p>
-                        Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarian se reinician automáticamente
-                        todos los días y llevan un seguimiento de tu racha.
+                        Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarias se reinician automáticamente
+                        a medianoche y llevan un seguimiento de tu racha.
                     </p>
                 </div>
                 <Task v-for="task of dailyTasks" :key="task.id" v-bind="task"/>
@@ -80,6 +80,10 @@ export default class TasksView extends Vue {
 
 <style lang="scss">
     @import '../scss/variables';
+
+    .tasks-section {
+        padding-bottom: 4em;
+    }
 
     .tasks-heading {
         margin: 0;

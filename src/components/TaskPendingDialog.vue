@@ -20,6 +20,8 @@
                         class="dialog-form-input pending-subtasks-list" 
                         type="text"
                         :value="subTask.name"
+                        ref="subTasks"
+                        @blur="updateSubTaskName(subTask.id, $event)"
                     >
                     <input @keydown.enter="addSubTask" 
                         id="task-pending-subtask"
@@ -38,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class TaskPendingDialog extends Vue {
@@ -53,7 +55,7 @@ export default class TaskPendingDialog extends Vue {
     private addSubTask(): void {
         let task: ISubTask;
 
-        const taskId = `${this.currentSubTasks.length + 1}`;
+        const taskId = `${this.currentSubTasks.length}`;
         const taskName = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
 
         task = {
@@ -66,17 +68,34 @@ export default class TaskPendingDialog extends Vue {
         (document.getElementById('task-pending-subtask') as HTMLInputElement).value = '';
     }
 
+    private updateSubTaskName(id: string, event: any) {
+        const name = event.target.value;
+        this.$store.dispatch('pending/updateCurrentSubTaskName', { id, name });
+    }
+
     private procesarTarea(): void {
         const taskId = (document.getElementById('task-pending-id') as HTMLInputElement).value;
         const taskName = (document.getElementById('task-pending-name') as HTMLInputElement).value;
         const taskNotes = (document.getElementById('task-pending-notes') as HTMLInputElement).value;
         const subTasks = this.currentSubTasks;
+        const lastSubTask = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
+
+        if (lastSubTask) {
+            // @TODO Encontrar una mejor forma de generar ids
+            const subTask = {
+                id: this.currentSubTasks.length,
+                name: lastSubTask,
+                checked: false,
+            };
+
+            this.$store.dispatch('pending/addCurrentSubTask', subTask);
+        }
 
         const task: ITaskPending = {
             id: taskId,
             name: taskName,
             notes: taskNotes,
-            subTasks: subTasks,
+            subTasks,
         };
 
         if (!task.id) {

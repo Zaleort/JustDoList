@@ -38,12 +38,38 @@ export default {
             }
         },
 
+        updateCheck: (state: any, payload: any) => {
+            const i = state.tasks.findIndex((e: ITaskPending) => {
+                return e.id === payload.taskId;
+            });
+
+            if (i >= 0) {
+                const j = state.tasks[i].subTasks.findIndex((e: ISubTask) => {
+                    return e.id === payload.id;
+                });
+
+                if (j >= 0) {
+                    state.tasks[i].subTasks[j].checked = payload.checked;
+                }
+            }
+        },
+
         updateCurrent(state: any, task: ITaskPending) {
             state.current = task;
         },
 
         addCurrentSubTask(state: any, task: ISubTask) {
             state.current.subTasks.push(task);
+        },
+
+        updateCurrentSubTaskName(state: any, subTask: any) {
+            const i = state.current.subTasks.findIndex((e: ISubTask) => {
+                return e.id === subTask.id;
+            });
+
+            if (i >= 0) {
+                state.current.subTasks[i].name = subTask.name;
+            }
         },
     },
 
@@ -56,12 +82,20 @@ export default {
             context.commit('update', task);
         },
 
+        updateCheck: (context: any, payload: any) => {
+            context.commit('updateCheck', payload);
+        },
+
         updateCurrent: (context: any, task: ITaskPending) => {
             context.commit('updateCurrent', task);
         },
 
         addCurrentSubTask: (context: any, task: ISubTask) => {
             context.commit('addCurrentSubTask', task);
+        },
+
+        updateCurrentSubTaskName: (context: any, subTask: any) => {
+            context.commit('updateCurrentSubTaskName', subTask);
         },
     },
 };
