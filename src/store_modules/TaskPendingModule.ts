@@ -38,6 +38,14 @@ export default {
             }
         },
 
+        complete(state: any, id: string) {
+            const i = state.tasks.findIndex((e: ITaskPending) => {
+                return e.id === id;
+            });
+
+            state.tasks.splice(i, 1);
+        },
+
         updateCheck: (state: any, payload: any) => {
             const i = state.tasks.findIndex((e: ITaskPending) => {
                 return e.id === payload.taskId;
@@ -80,6 +88,10 @@ export default {
 
         updateTask: (context: any, task: ITaskPending) => {
             context.commit('update', task);
+        },
+
+        completeTask: (context: any, id: string) => {
+            context.commit('complete', id);
         },
 
         updateCheck: (context: any, payload: any) => {

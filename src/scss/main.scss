@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa:700|Montserrat|Raleway:400,700');
 @import 'normalize';
 @import 'variables';
 @import 'utility';
-@import url('https://fonts.googleapis.com/css?family=Comfortaa:700|Montserrat|Raleway:400,700');
+@import 'animations';
 
 body {
     font-family: $raleway;
@@ -16,6 +17,41 @@ h1 {
 p {
     font-family: 'Montserrat', sans-serif;
     line-height: 1.5;
+}
+
+textarea {
+    resize: none;
+    resize: vertical;
+}
+
+.dialog-form {
+    padding: 16px;
+}
+
+.dialog-form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.dialog-form-name {
+    font-family: $montserrat;
+    margin: 7px 0;
+}
+
+.dialog-form-input {
+    padding: 7px;
+    font-family: $montserrat;
+    border: 1px solid $grey300;
+    border-radius: 3px;
+}
+
+.dialog-subtasks-list {
+    padding-left: 12px;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid $grey300;
+    background-color: #fefefe;
 }
 
 .icon {

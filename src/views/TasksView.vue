@@ -5,7 +5,7 @@
             Búsqueda - Etiquetas
         </div>
         <section class="tasks-section">
-            <!-- Tareas Pendientes -->
+            <!-- Tareas Diarias -->
             <section class="tasks-daily-section">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas diarias</h2>
@@ -20,7 +20,13 @@
                         a medianoche y llevan un seguimiento de tu racha.
                     </p>
                 </div>
-                <Task v-for="task of dailyTasks" :key="task.id" v-bind="task"/>
+                <transition-group
+                    name="task-transition"
+                    enter-active-class="animate faster fade-in-up-slight"
+                    leave-active-class="absolute animate faster fade-out"
+                    move-class="move">
+                        <Task v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
+                </transition-group>
             </section>
 
 
@@ -39,11 +45,18 @@
                         las tareas pendientes, y una vez completadas se moverán a tu historial de tareas completadas.
                     </p>
                 </div>
-                <Task v-for="task in pendingTasks" :key="task.id" v-bind="task"/>
+                <transition-group
+                    name="task-transition"
+                    enter-active-class="animate faster fade-in-up-slight"
+                    leave-active-class="absolute animate faster fade-out"
+                    move-class="move">
+                        <Task v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
+                </transition-group>
             </section>
         </section>
 
         <TaskPendingDialog />
+        <TaskDailyDialog />
     </main>
 </template>
 
@@ -51,15 +64,15 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Task from '../components/Task.vue';
 import TaskPendingDialog from '../components/TaskPendingDialog.vue';
+import TaskDailyDialog from '../components/TaskDailyDialog.vue';
 import { mapState } from 'vuex';
 
 @Component({
-    components: { Task, TaskPendingDialog },
+    components: { Task, TaskPendingDialog, TaskDailyDialog },
 
     computed: {
         ...mapState({
             pendingTasks: (state) => (state as any).pending.tasks,
-            pendingCurrentTask: (state) => (state as any).pending.current,
             dailyTasks: (state) => (state as any).daily.tasks,
         }),
     },
@@ -68,11 +81,13 @@ import { mapState } from 'vuex';
 export default class TasksView extends Vue {
     private openDailyDialog() {
         document.getElementById('task-daily-heading')!.innerHTML = 'Crear nueva tarea diaria';
+        (document.getElementById('task-daily-submit') as HTMLInputElement).value = 'Crear tarea';
         this.$store.dispatch('openDialog', 'task-daily-dialog');
     }
 
     private openPendingDialog() {
         document.getElementById('task-pending-heading')!.innerHTML = 'Crear nueva tarea pendiente';
+        (document.getElementById('task-pending-submit') as HTMLInputElement).value = 'Crear tarea';
         this.$store.dispatch('openDialog', 'task-pending-dialog');
     }
 }

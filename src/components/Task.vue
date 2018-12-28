@@ -1,8 +1,8 @@
 <template>
-    <div class="task-card">
+    <div class="task-card" ref="task">
         <div class="task-card-header">
             <div class="checkbox-group">
-                <button class="checkbox-button checkbox-indicator"></button>
+                <button @click="completeTask" class="checkbox-button checkbox-indicator"></button>
                 <p @click="openEditTask" class="checkbox-title">{{ name }}</p>
             </div>
             <svg v-if="hasSubTasks" class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -52,6 +52,7 @@ export default class Task extends Vue {
 
     private getTaskObject(): ITaskPending {
         // Se intenta evitar pasar referencias, de modo que no afecte directamente a state.task
+        // causando comportamientos inesperados
 
         return {
             id: this.id,
@@ -61,16 +62,38 @@ export default class Task extends Vue {
         };
     }
 
+    private completeTask(): void {
+        // Mantiene el ancho del objeto al aplicar position: absolute para la animación de salida
+        const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
+        (this.$refs.task as HTMLElement).style.width = width + 'px';
+
+        if (this.type === 'pending') {
+            this.$store.dispatch('pending/completeTask', this.id);
+        } else {
+            this.$store.dispatch('daily/completeTask', this.id);
+        }
+    }
+
     private openEditTask(): void {
-        // @TODO Usar type para diferenciar entre Pending y Daily
+        if (this.type === 'pending') {
+            (document.getElementById('task-pending-id') as HTMLInputElement).value = this.id;
+            (document.getElementById('task-pending-name') as HTMLInputElement).value = this.name;
+            (document.getElementById('task-pending-notes') as HTMLInputElement).value = this.notes;
+            (document.getElementById('task-pending-submit') as HTMLInputElement).value = 'Guardar';
+            document.getElementById('task-pending-heading')!.innerHTML = 'Editar tarea pendiente';
 
-        (document.getElementById('task-pending-id') as HTMLInputElement).value = this.id;
-        (document.getElementById('task-pending-name') as HTMLInputElement).value = this.name;
-        (document.getElementById('task-pending-notes') as HTMLInputElement).value = this.notes;
-        document.getElementById('task-pending-heading')!.innerHTML = 'Editar tarea pendiente';
+            this.$store.dispatch('pending/updateCurrent', this.getTaskObject());
+            this.$store.dispatch('openDialog', 'task-pending-dialog');
+        } else {
+            (document.getElementById('task-daily-id') as HTMLInputElement).value = this.id;
+            (document.getElementById('task-daily-name') as HTMLInputElement).value = this.name;
+            (document.getElementById('task-daily-notes') as HTMLInputElement).value = this.notes;
+            (document.getElementById('task-daily-submit') as HTMLInputElement).value = 'Guardar';
+            document.getElementById('task-daily-heading')!.innerHTML = 'Editar tarea diaria';
 
-        this.$store.dispatch('pending/updateCurrent', this.getTaskObject());
-        this.$store.dispatch('openDialog', 'task-pending-dialog');
+            this.$store.dispatch('daily/updateCurrent', this.getTaskObject());
+            this.$store.dispatch('openDialog', 'task-daily-dialog');
+        }
     }
 }
 </script>
