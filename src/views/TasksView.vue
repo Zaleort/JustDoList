@@ -25,7 +25,7 @@
                     enter-active-class="animate faster fade-in-up-slight"
                     leave-active-class="absolute animate faster fade-out"
                     move-class="move">
-                        <Task v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
+                        <Task @openDialog="showTaskDailyDialog = true" v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
                 </transition-group>
             </section>
 
@@ -50,13 +50,13 @@
                     enter-active-class="animate faster fade-in-up-slight"
                     leave-active-class="absolute animate faster fade-out"
                     move-class="move">
-                        <Task v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
+                        <Task @openDialog="showTaskPendingDialog = true" v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
                 </transition-group>
             </section>
         </section>
 
-        <TaskPendingDialog />
-        <TaskDailyDialog />
+        <TaskPendingDialog :show="showTaskPendingDialog" @close="showTaskPendingDialog = false" />
+        <TaskDailyDialog :show="showTaskDailyDialog" @close="showTaskDailyDialog = false" />
     </main>
 </template>
 
@@ -79,16 +79,19 @@ import { mapState } from 'vuex';
 })
 
 export default class TasksView extends Vue {
+    private showTaskPendingDialog: boolean = false;
+    private showTaskDailyDialog: boolean = false;
+
     private openDailyDialog() {
         document.getElementById('task-daily-heading')!.innerHTML = 'Crear nueva tarea diaria';
         (document.getElementById('task-daily-submit') as HTMLInputElement).value = 'Crear tarea';
-        this.$store.dispatch('openDialog', 'task-daily-dialog');
+        this.showTaskDailyDialog = true;
     }
 
     private openPendingDialog() {
         document.getElementById('task-pending-heading')!.innerHTML = 'Crear nueva tarea pendiente';
         (document.getElementById('task-pending-submit') as HTMLInputElement).value = 'Crear tarea';
-        this.$store.dispatch('openDialog', 'task-pending-dialog');
+        this.showTaskPendingDialog = true;
     }
 }
 </script>

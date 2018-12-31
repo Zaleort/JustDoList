@@ -1,49 +1,53 @@
 <template>
-    <div class="dialog-container" id="task-daily-dialog">
-        <div class="dialog-content">
-            <div class="dialog-header">
-                <h1 id="task-daily-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
-            </div>
-            <div id="task-daily-form" class="dialog-form">
-                <div></div>
-                <label class="dialog-form-group">
-                    <p class="dialog-form-name">Tarea</p>
-                    <input id="task-daily-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
-                </label>
-                <label class="dialog-form-group">
-                    <p class="dialog-form-name">Notas</p>
-                    <textarea id="task-daily-notes" class="dialog-form-input" cols="30" rows="10"></textarea>
-                </label>
-                <label class="dialog-form-group">
-                    <p class="dialog-form-name">Subtareas</p>
-                    <input v-for="subTask of currentSubTasks" :key="subTask.id"
-                        class="dialog-form-input dialog-subtasks-list" 
-                        type="text"
-                        :value="subTask.name"
-                        ref="subTasks"
-                        @blur="updateSubTaskName(subTask.id, $event)"
-                    >
-                    <input @keydown.enter="addSubTask" 
-                        id="task-daily-subtask"
-                        class="dialog-form-input dialog-subtasks-list" 
-                        type="text"
-                        placeholder="Añadir nueva subtarea">
-                </label>
-                <div class="dialog-footer">
-                    <input type="hidden" id="task-daily-id" value="">
-                    <input @click="closeDialog" class="mr-1 button button-alpha font-danger" type="button" value="Cancelar">
-                    <input @click="procesarTarea" id="task-daily-submit" class="button button-success" type="submit" value="Crear tarea">
-                </div>
+    <modal-dialog :show="show" @close="closeDialog">
+        <div class="dialog-header">
+            <h1 id="task-daily-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
+        </div>
+        <div id="task-daily-form" class="dialog-form">
+            <div></div>
+            <label class="dialog-form-group">
+                <p class="dialog-form-name">Tarea</p>
+                <input id="task-daily-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
+            </label>
+            <label class="dialog-form-group">
+                <p class="dialog-form-name">Notas</p>
+                <textarea id="task-daily-notes" class="dialog-form-input" cols="30" rows="10"></textarea>
+            </label>
+            <label class="dialog-form-group">
+                <p class="dialog-form-name">Subtareas</p>
+                <input v-for="subTask of currentSubTasks" :key="subTask.id"
+                    class="dialog-form-input dialog-subtasks-list" 
+                    type="text"
+                    :value="subTask.name"
+                    ref="subTasks"
+                    @blur="updateSubTaskName(subTask.id, $event)"
+                >
+                <input @keydown.enter="addSubTask" 
+                    id="task-daily-subtask"
+                    class="dialog-form-input dialog-subtasks-list" 
+                    type="text"
+                    placeholder="Añadir nueva subtarea">
+            </label>
+            <div class="dialog-footer">
+                <input type="hidden" id="task-daily-id" value="">
+                <input @click="closeDialog" class="mr-1 button button-alpha font-danger" type="button" value="Cancelar">
+                <input @click="procesarTarea" id="task-daily-submit" class="button button-success" type="submit" value="Crear tarea">
             </div>
         </div>
-    </div>
+    </modal-dialog>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import ModalDialog from './ModalDialog.vue';
 
-@Component
+@Component({
+    components: { ModalDialog },
+})
+
 export default class TaskDailyDialog extends Vue {
+    @Prop() private show!: boolean;
+
     get currentTask() {
         return this.$store.state.daily.current;
     }
@@ -103,7 +107,8 @@ export default class TaskDailyDialog extends Vue {
         if (!task.id) {
             // Generar y asignar ID
             // Añadir tarea
-            task.id = `${this.$store.state.daily.tasks.length + 1}`;
+            this.$store.commit('daily/updateCounter');
+            task.id = this.$store.state.daily.idCounter;
             this.$store.dispatch('daily/addTask', task);
         } else {
             this.$store.dispatch('daily/updateTask', task);
@@ -113,7 +118,7 @@ export default class TaskDailyDialog extends Vue {
     }
 
     private closeDialog(): void {
-        this.$store.dispatch('closeDialog', 'task-daily-dialog');
+        this.$emit('close');
         this.$store.dispatch('daily/updateCurrent', { id: '', name: '', notes: '', subTasks: [] });
         this.resetDialog();
     }
@@ -126,16 +131,3 @@ export default class TaskDailyDialog extends Vue {
     }
 }
 </script>
-
-
-<style lang="scss">
-    @import '../scss/variables';
-    .daily-subtasks-list {
-        padding-left: 12px;
-        border: none;
-        border-radius: 0;
-        border-bottom: 1px solid $grey300;
-        background-color: #fefefe;
-    }
-
-</style>

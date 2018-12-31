@@ -12,6 +12,7 @@ export default {
     namespaced: true,
     state: {
         tasks: [] as ITaskPending[],
+        idCounter: '0',
 
         // Al hacer click en editar tarea, se poblará este objeto para mostrar sus datos
         // correctamente en el formulario de edición
@@ -24,6 +25,12 @@ export default {
     },
 
     mutations: {
+        updateCounter(state: any) {
+            let id = state.idCounter;
+            id++;
+            state.idCounter = id.toString();
+        },
+
         add(state: any, task: ITaskPending) {
             state.tasks.push(task);
         },
@@ -46,7 +53,7 @@ export default {
             state.tasks.splice(i, 1);
         },
 
-        updateCheck: (state: any, payload: any) => {
+        updateCheck(state: any, payload: any) {
             const i = state.tasks.findIndex((e: ITaskPending) => {
                 return e.id === payload.taskId;
             });
@@ -82,6 +89,10 @@ export default {
     },
 
     actions: {
+        updateCounter: (context: any) => {
+            context.commit('updateCounter');
+        },
+
         addTask: (context: any, task: ITaskPending) => {
             context.commit('add', task);
         },

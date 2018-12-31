@@ -28,21 +28,5 @@ export default new Vuex.Store({
             const navMenu: any = document.getElementById('nav-menu');
             navMenu.classList.remove('nav-menu-show');
         },
-
-        closeDialog: (context: any, dialog: string) => {
-            const e = document.getElementById(dialog);
-
-            if (e) {
-                e.classList.remove('show');
-            }
-        },
-
-        openDialog: (context: any, dialog: string) => {
-            const e = document.getElementById(dialog);
-
-            if (e) {
-                e.classList.add('show');
-            }
-        },
     },
 });

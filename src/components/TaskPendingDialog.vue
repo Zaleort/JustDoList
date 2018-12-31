@@ -1,14 +1,13 @@
 <template>
-    <div class="dialog-container" id="task-pending-dialog">
-        <div class="dialog-content">
-            <div class="dialog-header">
-                <h1 id="task-pending-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
+    <modal-dialog :show="show" @close="closeDialog">
+        <div class="dialog-header">
+            <h1 id="task-pending-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
             </div>
             <div id="task-pending-form" class="dialog-form">
                 <div></div>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Tarea</p>
-                    <input id="task-pending-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
+                    <input @blur="validateTaskName" id="task-pending-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Notas</p>
@@ -35,15 +34,20 @@
                     <input @click="procesarTarea" id="task-pending-submit" class="button button-success" type="submit" value="Crear tarea">
                 </div>
             </div>
-        </div>
-    </div>
+    </modal-dialog>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import ModalDialog from './ModalDialog.vue';
 
-@Component
+@Component({
+     components: { ModalDialog },
+})
+
 export default class TaskPendingDialog extends Vue {
+    @Prop() private show!: boolean;
+
     get currentTask() {
         return this.$store.state.pending.current;
     }
@@ -78,6 +82,9 @@ export default class TaskPendingDialog extends Vue {
     private procesarTarea(): void {
         const taskId = (document.getElementById('task-pending-id') as HTMLInputElement).value;
         const taskName = (document.getElementById('task-pending-name') as HTMLInputElement).value;
+
+        if (!this.validateTaskName()) { return; }
+
         const taskNotes = (document.getElementById('task-pending-notes') as HTMLInputElement).value;
         const subTasks = this.currentSubTasks;
         const lastSubTask = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
@@ -101,9 +108,8 @@ export default class TaskPendingDialog extends Vue {
         };
 
         if (!task.id) {
-            // Generar y asignar ID
-            // Añadir tarea
-            task.id = `${this.$store.state.pending.tasks.length + 1}`;
+            this.$store.commit('pending/updateCounter');
+            task.id = this.$store.state.pending.idCounter;
             this.$store.dispatch('pending/addTask', task);
         } else {
             this.$store.dispatch('pending/updateTask', task);
@@ -112,8 +118,20 @@ export default class TaskPendingDialog extends Vue {
         this.closeDialog();
     }
 
+    private validateTaskName(): boolean {
+        const taskName = document.getElementById('task-pending-name') as HTMLInputElement;
+
+        if (!taskName.value || taskName.value.trim().length === 0) {
+            taskName.classList.add('input-error');
+            return false;
+        }
+
+        taskName.classList.remove('input-error');
+        return true;
+    }
+
     private closeDialog(): void {
-        this.$store.dispatch('closeDialog', 'task-pending-dialog');
+        this.$emit('close');
         this.$store.dispatch('pending/updateCurrent', { id: '', name: '', notes: '', subTasks: [] });
         this.resetDialog();
     }

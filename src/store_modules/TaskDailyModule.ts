@@ -12,6 +12,7 @@ export default {
     namespaced: true,
     state: {
         tasks: [] as ITaskDaily[],
+        idCounter: '0',
         current: {
             id: '',
             name: '',
@@ -21,6 +22,12 @@ export default {
     },
 
     mutations: {
+        updateCounter(state: any) {
+            let id = state.idCounter;
+            id++;
+            state.idCounter = id.toString();
+        },
+
         add(state: any, task: ITaskDaily) {
             state.tasks.push(task);
         },
@@ -79,6 +86,10 @@ export default {
     },
 
     actions: {
+        updateCounter: (context: any) => {
+            context.commit('updateCounter');
+        },
+
         addTask: (context: any, task: ITaskDaily) => {
             context.commit('add', task);
         },

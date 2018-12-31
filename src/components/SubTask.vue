@@ -19,7 +19,17 @@ export default class SubTask extends Vue {
 
     private updateCheck() {
         const checked = (this.$refs.checkbox as HTMLInputElement).checked;
-        this.$store.dispatch('pending/updateCheck', { checked, id: this.id, taskId: this.taskId });
+        const payload = {
+            checked,
+            id: this.id,
+            taskId: this.taskId,
+        };
+
+        if (this.taskType === 'pending') {
+            this.$store.dispatch('pending/updateCheck', payload);
+        } else {
+            this.$store.dispatch('daily/updateCheck', payload);
+        }
     }
 }
 </script>
