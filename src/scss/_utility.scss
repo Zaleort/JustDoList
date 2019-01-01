@@ -127,6 +127,7 @@
 
 .input-error {
     outline: 2px solid $red500;
+    outline-offset: -1px;
 }
 
 @media only screen and (min-width: $laptop) {

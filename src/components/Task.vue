@@ -8,10 +8,19 @@
             <svg @click="toggleSubTasks" ref="expandIcon" v-if="hasSubTasks" class="icon expand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
             </svg>
-            <svg class="icon task-options-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0h24v24H0z" fill="none"/>
-                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
+            <i @click="showOptionsMenu = !showOptionsMenu" class="icon task-options-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <context-menu 
+                    @action="handleOptionsMenu"
+                    @close="showOptionsMenu = false" 
+                    :items="options" 
+                    v-if="showOptionsMenu"></context-menu>
+            </i>
+            
+            
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div ref="subTasks" class="task-subtasks-list" v-if="hasSubTasks">
@@ -26,9 +35,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import SubTask from './SubTask.vue';
+import ContextMenu from './ContextMenu.vue';
 
 @Component({
-    components: { SubTask },
+    components: { SubTask, ContextMenu },
 })
 export default class Task extends Vue {
     @Prop() private id!: string;
@@ -41,6 +51,18 @@ export default class Task extends Vue {
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
     @Prop() private dateFinalized!: string;
+
+    private showOptionsMenu: boolean = false;
+    private options = [
+        {
+            name: 'Editar',
+            src: '',
+        },
+        {
+            name: 'Borrar',
+            src: '',
+        },
+    ];
 
     get hasNotes(): boolean {
         return this.notes.length > 0 || this.notes.trim().length > 0;
@@ -100,6 +122,14 @@ export default class Task extends Vue {
         (this.$refs.expandIcon as HTMLElement).classList.toggle('expanded');
         (this.$refs.subTasks as HTMLElement).classList.toggle('task-subtasks-hide');
     }
+
+    private handleOptionsMenu(payload: number): void {
+        if (payload === 0) {
+            this.openEditTask();
+        } else if (payload === 1) {
+            this.completeTask();
+        }
+    }
 }
 </script>
 
@@ -110,7 +140,6 @@ export default class Task extends Vue {
     .task-card {
         margin-top: 1em;
         background-color: #ffffff;
-        border: 1px solid $grey200;
         border-left: 9px solid $primary;
         padding: 21px 16px;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
@@ -124,13 +153,15 @@ export default class Task extends Vue {
     .task-notes {
         font-size: 0.8em;
         color: $grey700;
+        margin-top: 12px;
+        margin-bottom: 0;
         margin-left: 36px;
     }
 
     .expand-icon {
         fill: $grey400;
-        min-width: 18px;
-        min-height: 18px;
+        width: 18px;
+        height: 18px;
     }
 
     .expand-icon.expanded {
@@ -138,8 +169,9 @@ export default class Task extends Vue {
     }
 
     .task-options-icon {
-        min-width: 28px;
-        min-height: 28px;
+        position: relative;
+        width: 28px;
+        height: 28px;
         fill: $grey400;
         margin-left: auto;
     }
@@ -169,6 +201,7 @@ export default class Task extends Vue {
 
     .checkbox-title {
         font-family: $montserrat;
+        user-select: none;
         margin: 0 12px 0 7px;
         word-wrap: break-word;
         transition: all 0.1s ease;

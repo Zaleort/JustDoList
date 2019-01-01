@@ -11,7 +11,7 @@
             </label>
             <label class="dialog-form-group">
                 <p class="dialog-form-name">Notas</p>
-                <textarea id="task-daily-notes" class="dialog-form-input" cols="30" rows="10"></textarea>
+                <textarea id="task-daily-notes" class="dialog-form-textarea dialog-form-input" rows="4"></textarea>
             </label>
             <label class="dialog-form-group">
                 <p class="dialog-form-name">Subtareas</p>
@@ -30,8 +30,8 @@
             </label>
             <div class="dialog-footer">
                 <input type="hidden" id="task-daily-id" value="">
-                <input @click="closeDialog" class="mr-1 button button-alpha font-danger" type="button" value="Cancelar">
-                <input @click="procesarTarea" id="task-daily-submit" class="button button-success" type="submit" value="Crear tarea">
+                <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
+                <input @click="procesarTarea" id="task-daily-submit" class="save-button button button-success" type="submit" value="Crear tarea">
             </div>
         </div>
     </modal-dialog>
@@ -125,7 +125,11 @@ export default class TaskDailyDialog extends Vue {
 
     private resetDialog(): void {
         (document.getElementById('task-daily-id') as HTMLInputElement).value = '';
-        (document.getElementById('task-daily-name') as HTMLInputElement).value = '';
+
+        const taskName = document.getElementById('task-daily-name') as HTMLInputElement;
+        taskName.value = '';
+        taskName.classList.remove('input-error');
+
         (document.getElementById('task-daily-notes') as HTMLInputElement).value = '';
         (document.getElementById('task-daily-subtask') as HTMLInputElement)!.value = '';
     }

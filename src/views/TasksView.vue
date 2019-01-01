@@ -29,7 +29,6 @@
                 </transition-group>
             </section>
 
-
             <!-- Tareas Pendientes -->
             <section class="tasks-pending-section">
                 <div class="tasks-header">

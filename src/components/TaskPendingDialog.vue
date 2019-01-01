@@ -4,14 +4,13 @@
             <h1 id="task-pending-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
             </div>
             <div id="task-pending-form" class="dialog-form">
-                <div></div>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Tarea</p>
                     <input @blur="validateTaskName" id="task-pending-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Notas</p>
-                    <textarea id="task-pending-notes" class="dialog-form-input" cols="30" rows="10"></textarea>
+                    <textarea id="task-pending-notes" class="dialog-form-input dialog-form-textarea" rows="4"></textarea>
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Subtareas</p>
@@ -28,10 +27,16 @@
                         type="text"
                         placeholder="Añadir nueva subtarea">
                 </label>
+                <label class="dialog-form-group">
+                    <p class="dialog-form-name">Fecha límite</p>
+                </label>
+                <label class="dialog-form-group">
+                    <p class="dialog-form-name">Etiquetas</p>
+                </label>
                 <div class="dialog-footer">
                     <input type="hidden" id="task-pending-id" value="">
-                    <input @click="closeDialog" class="mr-1 button button-alpha font-danger" type="button" value="Cancelar">
-                    <input @click="procesarTarea" id="task-pending-submit" class="button button-success" type="submit" value="Crear tarea">
+                    <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
+                    <input @click="procesarTarea" id="task-pending-submit" class="save-button button button-success" type="submit" value="Crear tarea">
                 </div>
             </div>
     </modal-dialog>
@@ -138,7 +143,11 @@ export default class TaskPendingDialog extends Vue {
 
     private resetDialog(): void {
         (document.getElementById('task-pending-id') as HTMLInputElement).value = '';
-        (document.getElementById('task-pending-name') as HTMLInputElement).value = '';
+
+        const taskName = document.getElementById('task-pending-name') as HTMLInputElement;
+        taskName.value = '';
+        taskName.classList.remove('input-error');
+
         (document.getElementById('task-pending-notes') as HTMLInputElement).value = '';
         (document.getElementById('task-pending-subtask') as HTMLInputElement)!.value = '';
     }
