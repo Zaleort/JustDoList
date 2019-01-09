@@ -99,6 +99,10 @@ export default class ModalDialog extends Vue {
     transition: border 0.15s;
 }
 
+.dialog-form-input:hover {
+    border-color: $grey400;
+}
+
 .dialog-form-input:focus {
     outline: none;
     border-color: $primary;
