@@ -11,6 +11,10 @@
     animation-duration: 500ms;
 }
 
+.animate.fastest {
+    animation-duration: 250ms;
+}
+
 .animate.delay-500 {
     animation-delay: 0.5s;
 }

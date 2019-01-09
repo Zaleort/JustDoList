@@ -4,9 +4,16 @@
         <div>
             Búsqueda - Etiquetas
         </div>
-        <section class="tasks-section">
+        <transition-group
+            name="task-transition"
+            tag="section"
+            class="tasks-section"
+            enter-active-class="animate fastest fade-in-up-slight"
+            leave-active-class="absolute animate fastest fade-out"
+            move-class="move">
+
             <!-- Tareas Diarias -->
-            <section class="tasks-daily-section">
+            <section class="tasks-daily-section" :key="'daily'">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas diarias</h2>
                     <img @click="openDailyDialog" 
@@ -22,15 +29,15 @@
                 </div>
                 <transition-group
                     name="task-transition"
-                    enter-active-class="animate faster fade-in-up-slight"
-                    leave-active-class="absolute animate faster fade-out"
+                    enter-active-class="animate fastest fade-in-up-slight"
+                    leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
                         <Task @openDialog="showTaskDailyDialog = true" v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
                 </transition-group>
             </section>
 
             <!-- Tareas Pendientes -->
-            <section class="tasks-pending-section">
+            <section class="tasks-pending-section" :key="'pending'">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas pendientes</h2>
                     <img @click="openPendingDialog" 
@@ -46,13 +53,13 @@
                 </div>
                 <transition-group
                     name="task-transition"
-                    enter-active-class="animate faster fade-in-up-slight"
-                    leave-active-class="absolute animate faster fade-out"
+                    enter-active-class="animate fastest fade-in-up-slight"
+                    leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
                         <Task @openDialog="showTaskPendingDialog = true" v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
                 </transition-group>
             </section>
-        </section>
+        </transition-group>
 
         <TaskPendingDialog :show="showTaskPendingDialog" @close="showTaskPendingDialog = false" />
         <TaskDailyDialog :show="showTaskDailyDialog" @close="showTaskDailyDialog = false" />

@@ -17,7 +17,8 @@
                     @action="handleOptionsMenu"
                     @close="showOptionsMenu = false" 
                     :items="options" 
-                    v-if="showOptionsMenu"></context-menu>
+                    v-if="showOptionsMenu">
+                </context-menu>
             </i>
             
             
