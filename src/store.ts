@@ -2,14 +2,15 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import TaskPendingModule from './store_modules/TaskPendingModule';
 import TaskDailyModule from './store_modules/TaskDailyModule';
+import TagModule from './store_modules/TagModule';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    strict: true,
     modules: {
         daily: TaskDailyModule,
         pending: TaskPendingModule,
+        tag: TagModule,
     },
 
     state: {
