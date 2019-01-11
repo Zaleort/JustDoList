@@ -5,7 +5,7 @@
                 @click="$emit('action', index)" 
                 v-for="(item, index) in items" 
                 :key="index">
-                    <i><img :src="item.src" alt=""></i>
+                    <img class="cm-item-icon" :src="item.src" alt="">
                     <span>{{ item.name }}</span>
             </li>
         </ul>
@@ -59,6 +59,8 @@ export default class ContextMenu extends Vue {
     }
 
     .cm-item {
+        display: flex;
+        align-items: center;
         width: 100%;
         font-style: normal;
         padding: 12px 16px;
@@ -66,7 +68,11 @@ export default class ContextMenu extends Vue {
     }
 
     .cm-item:hover {
-        background-color: $primary;
-        color: $grey200;
+        background-color: $grey100;
+    }
+
+    .cm-item-icon {
+        width: 14px;
+        margin-right: 7px;
     }
 </style>

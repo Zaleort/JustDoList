@@ -6,7 +6,12 @@
             <div id="task-pending-form" class="dialog-form">
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Tarea</p>
-                    <input @blur="validateTaskName" id="task-pending-name" class="dialog-form-input" placeholder="Limpiar los platos" type="text">
+                    <input @blur="validateTaskName"
+                        @keydown.enter="document.getElementById('task-pending-submit').click()"
+                        id="task-pending-name" 
+                        class="dialog-form-input" 
+                        placeholder="Limpiar los platos" 
+                        type="text">
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Notas</p>
@@ -19,13 +24,19 @@
                         type="text"
                         :value="subTask.name"
                         ref="subTasks"
-                        @blur="updateSubTaskName(subTask.id, $event)"
-                    >
-                    <input @keydown.enter="addSubTask" 
-                        id="task-pending-subtask"
-                        class="dialog-form-input dialog-subtasks-list" 
-                        type="text"
-                        placeholder="Añadir nueva subtarea">
+                        @blur="updateSubTaskName(subTask.id, $event)">
+                    <div class="add-subtask-group">
+                        <span @click="addSubTask" class="icon add-subtask-icon">
+                            <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+                            </svg>
+                        </span>
+                        <input @keydown.enter="addSubTask" 
+                            id="task-pending-subtask"
+                            class="dialog-form-input dialog-subtasks-list dialog-subtasks-add" 
+                            type="text"
+                            placeholder="Añadir nueva subtarea">
+                    </div>
                 </label>
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Fecha límite</p>
@@ -36,7 +47,7 @@
                 <div class="dialog-footer">
                     <input type="hidden" id="task-pending-id" value="">
                     <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
-                    <input @click="procesarTarea" id="task-pending-submit" class="save-button button button-success" type="submit" value="Crear tarea">
+                    <input @click="processTask" id="task-pending-submit" class="save-button button button-success" type="submit" value="Crear tarea">
                 </div>
             </div>
     </modal-dialog>
@@ -84,7 +95,7 @@ export default class TaskPendingDialog extends Vue {
         this.$store.dispatch('pending/updateCurrentSubTaskName', { id, name });
     }
 
-    private procesarTarea(): void {
+    private processTask(): void {
         const taskId = (document.getElementById('task-pending-id') as HTMLInputElement).value;
         const taskName = (document.getElementById('task-pending-name') as HTMLInputElement).value;
 
@@ -113,7 +124,7 @@ export default class TaskPendingDialog extends Vue {
         };
 
         if (!task.id) {
-            this.$store.commit('pending/updateCounter');
+            this.$store.commit('pending/UPDATE_ID_COUNTER');
             task.id = this.$store.state.pending.idCounter;
             this.$store.dispatch('pending/addTask', task);
         } else {

@@ -120,6 +120,23 @@ export default class ModalDialog extends Vue {
     background-color: #fefefe;
 }
 
+.add-subtask-group {
+    position: relative;
+}
+
+.dialog-subtasks-add {
+    padding-left: 30px;
+    width: 100%;
+}
+
+.add-subtask-icon {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    left: 9px;
+    top: 9px;
+}
+
 .save-button:focus, .cancel-button:focus {
     outline: none;
 }

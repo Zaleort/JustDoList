@@ -22,17 +22,17 @@ export default {
     },
 
     mutations: {
-        updateCounter(state: any) {
+        UPDATE_ID_COUNTER(state: any) {
             let id = state.idCounter;
             id++;
             state.idCounter = id.toString();
         },
 
-        add(state: any, task: ITaskDaily) {
+        ADD_TASK(state: any, task: ITaskDaily) {
             state.tasks.push(task);
         },
 
-        update(state: any, task: ITaskDaily) {
+        UPDATE_TASK(state: any, task: ITaskDaily) {
             const i = state.tasks.findIndex((e: ITaskDaily) => {
                 return e.id === task.id;
             });
@@ -42,7 +42,7 @@ export default {
             }
         },
 
-        complete(state: any, id: string) {
+        COMPLETE_TASK(state: any, id: string) {
             const i = state.tasks.findIndex((e: ITaskDaily) => {
                 return e.id === id;
             });
@@ -50,7 +50,7 @@ export default {
             state.tasks.splice(i, 1);
         },
 
-        updateCheck: (state: any, payload: any) => {
+        UPDATE_SUBTASK_CHECK(state: any, payload: any) {
             const i = state.tasks.findIndex((e: ITaskDaily) => {
                 return e.id === payload.taskId;
             });
@@ -66,15 +66,15 @@ export default {
             }
         },
 
-        updateCurrent(state: any, task: ITaskDaily) {
+        UPDATE_CURRENT_TASK(state: any, task: ITaskDaily) {
             state.current = task;
         },
 
-        addCurrentSubTask(state: any, task: ISubTask) {
+        ADD_CURRENT_SUBTASK(state: any, task: ISubTask) {
             state.current.subTasks.push(task);
         },
 
-        updateCurrentSubTaskName(state: any, subTask: any) {
+        UPDATE_CURRENT_SUBTASK_NAME(state: any, subTask: any) {
             const i = state.current.subTasks.findIndex((e: ISubTask) => {
                 return e.id === subTask.id;
             });
@@ -87,35 +87,35 @@ export default {
 
     actions: {
         updateCounter: (context: any) => {
-            context.commit('updateCounter');
+            context.commit('UPDATE_ID_COUNTER');
         },
 
         addTask: (context: any, task: ITaskDaily) => {
-            context.commit('add', task);
+            context.commit('ADD_TASK', task);
         },
 
         updateTask: (context: any, task: ITaskDaily) => {
-            context.commit('update', task);
+            context.commit('UPDATE_TASK', task);
         },
 
         completeTask: (context: any, id: string) => {
-            context.commit('complete', id);
+            context.commit('COMPLETE_TASK', id);
         },
 
         updateCheck: (context: any, payload: any) => {
-            context.commit('updateCheck', payload);
+            context.commit('UPDATE_SUBTASK_CHECK', payload);
         },
 
         updateCurrent: (context: any, task: ITaskDaily) => {
-            context.commit('updateCurrent', task);
+            context.commit('UPDATE_CURRENT_TASK', task);
         },
 
         addCurrentSubTask: (context: any, task: ISubTask) => {
-            context.commit('addCurrentSubTask', task);
+            context.commit('ADD_CURRENT_SUBTASK', task);
         },
 
         updateCurrentSubTaskName: (context: any, subTask: any) => {
-            context.commit('updateCurrentSubTaskName', subTask);
+            context.commit('UPDATE_CURRENT_SUBTASK_NAME', subTask);
         },
     },
 };

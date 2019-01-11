@@ -20,13 +20,19 @@
                     type="text"
                     :value="subTask.name"
                     ref="subTasks"
-                    @blur="updateSubTaskName(subTask.id, $event)"
-                >
-                <input @keydown.enter="addSubTask" 
-                    id="task-daily-subtask"
-                    class="dialog-form-input dialog-subtasks-list" 
-                    type="text"
-                    placeholder="Añadir nueva subtarea">
+                    @blur="updateSubTaskName(subTask.id, $event)">
+                <div class="add-subtask-group">
+                    <span @click="addSubTask" class="icon add-subtask-icon">
+                        <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+                        </svg>
+                    </span>
+                    <input @keydown.enter="addSubTask" 
+                        id="task-daily-subtask"
+                        class="dialog-form-input dialog-subtasks-list dialog-subtasks-add" 
+                        type="text"
+                        placeholder="Añadir nueva subtarea">
+                </div>
             </label>
             <div class="dialog-footer">
                 <input type="hidden" id="task-daily-id" value="">
@@ -107,7 +113,7 @@ export default class TaskDailyDialog extends Vue {
         if (!task.id) {
             // Generar y asignar ID
             // Añadir tarea
-            this.$store.commit('daily/updateCounter');
+            this.$store.commit('daily/UPDATE_ID_COUNTER');
             task.id = this.$store.state.daily.idCounter;
             this.$store.dispatch('daily/addTask', task);
         } else {

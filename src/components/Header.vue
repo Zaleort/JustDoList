@@ -1,12 +1,12 @@
 <template>
     <header class="nav-bar">
-        <i class="icon menu-icon" @click="$store.dispatch('toggleNav')">
+        <span class="icon menu-icon" @click="$store.dispatch('toggleNav')">
             <img src="../assets/hamburger.svg" alt="Abrir menú">
-        </i>
+        </span>
         <a class="font-white logo" href="/">JustDoList</a>
-        <i class="icon options-icon">
+        <span class="icon options-icon">
             <img src="../assets/more_vert.svg" alt="Más opciones">
-        </i>
+        </span>
     </header>
 </template>
 
