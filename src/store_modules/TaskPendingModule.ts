@@ -25,6 +25,7 @@ export default {
     },
 
     mutations: {
+        // Tasks
         UPDATE_ID_COUNTER(state: any) {
             let id = state.idCounter;
             id++;
@@ -69,12 +70,24 @@ export default {
             }
         },
 
+        // Current Task
         UPDATE_CURRENT_TASK(state: any, task: ITaskPending) {
             state.current = task;
         },
 
+        // Subtasks of Current Task
         ADD_CURRENT_SUBTASK(state: any, task: ISubTask) {
             state.current.subTasks.push(task);
+        },
+
+        DELETE_CURRENT_SUBTASK(state: any, id: string) {
+            const i = state.current.subTasks.findIndex((e: ISubTask) => {
+                return e.id === id;
+            });
+
+            if (i >= 0) {
+                state.current.subTasks.splice(i, 1);
+            }
         },
 
         UPDATE_CURRENT_SUBTASK_NAME(state: any, subTask: any) {
@@ -89,6 +102,7 @@ export default {
     },
 
     actions: {
+        // Tasks
         updateCounter: (context: any) => {
             context.commit('UPDATE_ID_COUNTER');
         },
@@ -109,12 +123,18 @@ export default {
             context.commit('UPDATE_SUBTASK_CHECK', payload);
         },
 
+        // Current Task
         updateCurrent: (context: any, task: ITaskPending) => {
             context.commit('UPDATE_CURRENT_TASK', task);
         },
 
+        // SubTasks of Current Task
         addCurrentSubTask: (context: any, task: ISubTask) => {
             context.commit('ADD_CURRENT_SUBTASK', task);
+        },
+
+        deleteCurrentSubTask: (context: any, id: string) => {
+            context.commit('DELETE_CURRENT_SUBTASK', id);
         },
 
         updateCurrentSubTaskName: (context: any, subTask: any) => {

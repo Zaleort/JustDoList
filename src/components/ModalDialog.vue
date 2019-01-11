@@ -65,7 +65,7 @@ export default class ModalDialog extends Vue {
 
 .dialog-title {
     margin: 0;
-    font-size: 2em;
+    font-size: 1.75em;
     font-family: $raleway;
     font-weight: normal;
 }
@@ -112,6 +112,10 @@ export default class ModalDialog extends Vue {
     line-height: 1.5;
 }
 
+/*
+    SubTasks
+*/
+
 .dialog-subtasks-list {
     padding-left: 12px;
     border: none;
@@ -120,21 +124,49 @@ export default class ModalDialog extends Vue {
     background-color: #fefefe;
 }
 
-.add-subtask-group {
+.subtask-group {
     position: relative;
+}
+
+.dialog-subtasks-add, .dialog-subtasks-remove {
+    width: 100%;
 }
 
 .dialog-subtasks-add {
     padding-left: 30px;
-    width: 100%;
 }
 
-.add-subtask-icon {
+.dialog-subtasks-remove {
+    padding-right: 30px;
+}
+
+.add-subtask-icon, .delete-subtask-icon {
     position: absolute;
     width: 12px;
     height: 12px;
+}
+
+.add-subtask-icon {
     left: 9px;
     top: 9px;
+}
+
+.delete-subtask-icon {
+    display: none;
+    top: 9px;
+    right: 9px;
+}
+
+.delete-subtask-icon svg {
+    fill: $grey600;
+}
+
+.delete-subtask-icon svg:hover {
+    fill: $red500;
+}
+
+.subtask-group:hover > .delete-subtask-icon {
+    display: block;
 }
 
 .save-button:focus, .cancel-button:focus {
@@ -152,5 +184,11 @@ export default class ModalDialog extends Vue {
 .dialog-anim {
     animation: fade-in-up-slight 0.4s ease;
 }
-</style>
 
+@media only screen and (min-width: $laptop) {
+    .dialog-header {
+        padding: 28px 28px;
+    }
+}
+
+</style>

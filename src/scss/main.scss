@@ -5,6 +5,7 @@
 @import 'utility';
 
 body {
+    font-size: 1rem;
     font-family: $raleway;
     color: $grey800;
     -webkit-font-smoothing: antialiased;
@@ -26,7 +27,8 @@ textarea {
 }
 
 .icon {
-    transition: all 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, 
+                fill 0.15s ease;
 }
 
 .icon:hover {

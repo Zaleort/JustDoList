@@ -74,6 +74,16 @@ export default {
             state.current.subTasks.push(task);
         },
 
+        DELETE_CURRENT_SUBTASK(state: any, id: string) {
+            const i = state.current.subTasks.findIndex((e: ISubTask) => {
+                return e.id === id;
+            });
+
+            if (i >= 0) {
+                state.current.subTasks.splice(i, 1);
+            }
+        },
+
         UPDATE_CURRENT_SUBTASK_NAME(state: any, subTask: any) {
             const i = state.current.subTasks.findIndex((e: ISubTask) => {
                 return e.id === subTask.id;
@@ -112,6 +122,10 @@ export default {
 
         addCurrentSubTask: (context: any, task: ISubTask) => {
             context.commit('ADD_CURRENT_SUBTASK', task);
+        },
+
+        deleteCurrentSubTask: (context: any, id: string) => {
+            context.commit('DELETE_CURRENT_SUBTASK', id);
         },
 
         updateCurrentSubTaskName: (context: any, subTask: any) => {

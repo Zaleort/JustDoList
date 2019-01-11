@@ -6,12 +6,12 @@
                 <p @click="openEditTask" class="checkbox-title">{{ name }}</p>
             </div>
             <span @click="toggleSubTasks" v-if="hasSubTasks" class="icon expand-icon" ref="expandIcon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
             </svg>
             </span>
-            <span @click="showOptionsMenu = !showOptionsMenu" class="icon task-options-icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <span @click="showOptionsMenu = !showOptionsMenu" class="task-options-icon">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 0h24v24H0z" fill="none"/>
                     <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                 </svg>
