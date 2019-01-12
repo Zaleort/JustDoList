@@ -50,6 +50,30 @@ export default {
             state.tasks.splice(i, 1);
         },
 
+        MOVE_TASK_UP(state: any, id: string) {
+            if (!state.tasks || state.tasks.length === 0) { return; }
+
+            const i = state.tasks.findIndex((e: ITaskPending) => {
+                return e.id === id;
+            });
+
+            if ((i - 1) < 0) { return; }
+
+            state.tasks.splice(i - 1, 0, state.tasks.splice(i, 1)[0]);
+        },
+
+        MOVE_TASK_DOWN(state: any, id: string) {
+            if (!state.tasks || state.tasks.length === 0) { return; }
+
+            const i = state.tasks.findIndex((e: ITaskPending) => {
+                return e.id === id;
+            });
+
+            if ((i + 1) >= state.tasks.length) { return; }
+
+            state.tasks.splice(i + 1, 0, state.tasks.splice(i, 1)[0]);
+        },
+
         UPDATE_SUBTASK_CHECK(state: any, payload: any) {
             const i = state.tasks.findIndex((e: ITaskDaily) => {
                 return e.id === payload.taskId;
@@ -110,6 +134,14 @@ export default {
 
         completeTask: (context: any, id: string) => {
             context.commit('COMPLETE_TASK', id);
+        },
+
+        moveTaskUp: (context: any, id: string) => {
+            context.commit('MOVE_TASK_UP', id);
+        },
+
+        moveTaskDown: (context: any, id: string) => {
+            context.commit('MOVE_TASK_DOWN', id);
         },
 
         updateCheck: (context: any, payload: any) => {

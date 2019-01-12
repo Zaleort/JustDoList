@@ -1,8 +1,8 @@
 <template>
     <div ref="menu" class="cm-container">
         <ul class="cm-list">
-            <li class="cm-item"
-                @click="$emit('action', index)" 
+            <li :class="checkDisabled(item.disabled)"
+                @click="emitAction(item.disabled, index)"
                 v-for="(item, index) in items" 
                 :key="index">
                     <img class="cm-item-icon" :src="item.src" alt="">
@@ -35,6 +35,21 @@ export default class ContextMenu extends Vue {
         }
     }
 
+    private checkDisabled(isDisabled: boolean): string {
+        if (isDisabled) {
+            return 'cm-item disabled';
+        }
+
+        return 'cm-item';
+    }
+
+    private emitAction(isDisabled: boolean, index: number) {
+        if (isDisabled) { return; }
+
+        this.$emit('action', index);
+        this.$emit('close');
+    }
+
 }
 </script>
 
@@ -44,13 +59,13 @@ export default class ContextMenu extends Vue {
     .cm-container {
         position: absolute;
         user-select: none;
-        width: 100px;
+        width: 150px;
         right: 0;
         z-index: 9999;
     }
 
     .cm-list {
-        background-color: white;
+        background-color: #fff;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         width: 100%;
         margin: 0;
@@ -68,7 +83,13 @@ export default class ContextMenu extends Vue {
     }
 
     .cm-item:hover {
+        cursor: pointer;
         background-color: $grey100;
+    }
+
+    .cm-item.disabled:hover {
+        cursor: unset;
+        background-color: #fff;
     }
 
     .cm-item-icon {
