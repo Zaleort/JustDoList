@@ -16,9 +16,11 @@ export default new Vuex.Store({
     state: {
 
     },
+
     mutations: {
 
     },
+
     actions: {
         toggleNav: () => {
             const navMenu: any = document.getElementById('nav-menu');

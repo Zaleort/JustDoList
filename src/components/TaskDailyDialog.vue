@@ -75,10 +75,15 @@ export default class TaskDailyDialog extends Vue {
         return this.$store.state.daily.current.subTasks;
     }
 
+    get currentSubTaskIdCounter() {
+        return this.$store.state.daily.current.subTaskId;
+    }
+
     private addSubTask(): void {
         let task: ISubTask;
 
-        const taskId = `${this.currentSubTasks.length}`;
+        this.$store.commit('daily/INCREASE_CURRENT_SUBTASK_COUNTER');
+        const taskId = this.currentSubTaskIdCounter;
         const taskName = (document.getElementById('task-daily-subtask') as HTMLInputElement).value;
 
         if (!taskName || taskName.trim().length === 0) { return; }
@@ -113,9 +118,9 @@ export default class TaskDailyDialog extends Vue {
         const lastSubTask = (document.getElementById('task-daily-subtask') as HTMLInputElement).value;
 
         if (lastSubTask) {
-            // @TODO Encontrar una mejor forma de generar ids
+            this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
             const subTask = {
-                id: this.currentSubTasks.length,
+                id: this.currentSubTaskIdCounter,
                 name: lastSubTask,
                 checked: false,
             };
@@ -128,12 +133,13 @@ export default class TaskDailyDialog extends Vue {
             name: taskName,
             notes: taskNotes,
             subTasks,
+            subTaskId: this.currentSubTaskIdCounter,
         };
 
         if (!task.id) {
             // Generar y asignar ID
             // Añadir tarea
-            this.$store.commit('daily/UPDATE_ID_COUNTER');
+            this.$store.commit('daily/INCREASE_ID_COUNTER');
             task.id = this.$store.state.daily.idCounter;
             this.$store.dispatch('daily/addTask', task);
         } else {

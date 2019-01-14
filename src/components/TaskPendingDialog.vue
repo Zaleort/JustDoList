@@ -85,10 +85,15 @@ export default class TaskPendingDialog extends Vue {
         return this.$store.state.pending.current.subTasks;
     }
 
+    get currentSubTaskIdCounter() {
+        return this.$store.state.pending.current.subTaskId;
+    }
+
     private addSubTask(): void {
         let task: ISubTask;
 
-        const taskId = `${this.currentSubTasks.length}`;
+        this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
+        const taskId = this.currentSubTaskIdCounter;
         const taskName = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
 
         if (!taskName || taskName.trim().length === 0) { return; }
@@ -123,9 +128,9 @@ export default class TaskPendingDialog extends Vue {
         const lastSubTask = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
 
         if (lastSubTask) {
-            // @TODO Encontrar una mejor forma de generar ids
+            this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
             const subTask = {
-                id: this.currentSubTasks.length,
+                id: this.currentSubTaskIdCounter,
                 name: lastSubTask,
                 checked: false,
             };
@@ -138,10 +143,11 @@ export default class TaskPendingDialog extends Vue {
             name: taskName,
             notes: taskNotes,
             subTasks,
+            subTaskId: this.currentSubTaskIdCounter,
         };
 
         if (!task.id) {
-            this.$store.commit('pending/UPDATE_ID_COUNTER');
+            this.$store.commit('pending/INCREASE_ID_COUNTER');
             task.id = this.$store.state.pending.idCounter;
             this.$store.dispatch('pending/addTask', task);
         } else {

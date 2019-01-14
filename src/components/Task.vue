@@ -48,6 +48,7 @@ export default class Task extends Vue {
     @Prop() private name!: string;
     @Prop() private notes!: string;
     @Prop() private subTasks!: ISubTask[];
+    @Prop({ default: 0 }) private subTaskId!: number;
     @Prop() private tags!: object[];
     @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
@@ -106,6 +107,7 @@ export default class Task extends Vue {
             name: this.name,
             notes: this.notes,
             subTasks: JSON.parse(JSON.stringify(this.subTasks)),
+            subTaskId: this.subTaskId,
         };
     }
 
@@ -114,31 +116,26 @@ export default class Task extends Vue {
         const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
         (this.$refs.task as HTMLElement).style.width = width + 'px';
 
-        if (this.type === 'pending') {
-            this.$store.dispatch('pending/completeTask', this.id);
-        } else {
-            this.$store.dispatch('daily/completeTask', this.id);
-        }
+        this.$store.dispatch(this.type + '/completeTask', this.id);
     }
 
     private openEditTask(): void {
+        (document.getElementById('task-' + this.type + '-id') as HTMLInputElement).value = this.id;
+        (document.getElementById('task-' + this.type + '-name') as HTMLInputElement).value = this.name;
+        (document.getElementById('task-' + this.type + '-notes') as HTMLInputElement).value = this.notes;
+        (document.getElementById('task-' + this.type + '-submit') as HTMLInputElement).value = 'Guardar';
+
+        let heading = 'Editar tarea';
+
         if (this.type === 'pending') {
-            (document.getElementById('task-pending-id') as HTMLInputElement).value = this.id;
-            (document.getElementById('task-pending-name') as HTMLInputElement).value = this.name;
-            (document.getElementById('task-pending-notes') as HTMLInputElement).value = this.notes;
-            (document.getElementById('task-pending-submit') as HTMLInputElement).value = 'Guardar';
-            document.getElementById('task-pending-heading')!.innerHTML = 'Editar tarea pendiente';
-
-            this.$store.dispatch('pending/updateCurrent', this.getTaskObject());
-        } else {
-            (document.getElementById('task-daily-id') as HTMLInputElement).value = this.id;
-            (document.getElementById('task-daily-name') as HTMLInputElement).value = this.name;
-            (document.getElementById('task-daily-notes') as HTMLInputElement).value = this.notes;
-            (document.getElementById('task-daily-submit') as HTMLInputElement).value = 'Guardar';
-            document.getElementById('task-daily-heading')!.innerHTML = 'Editar tarea diaria';
-
-            this.$store.dispatch('daily/updateCurrent', this.getTaskObject());
+            heading = 'Editar tarea pendiente';
+        } else if (this.type === 'daily') {
+            heading = 'Editar tarea diaria';
         }
+
+        document.getElementById('task-' + this.type + '-heading')!.innerHTML = heading;
+
+        this.$store.dispatch(this.type + '/updateCurrent', this.getTaskObject());
 
         this.$emit('openDialog');
     }
@@ -149,8 +146,8 @@ export default class Task extends Vue {
     }
 
     private handleOptionsMenu(payload: number): void {
-        switch(payload) {
-            case 0: 
+        switch (payload) {
+            case 0:
                 this.openEditTask();
                 break;
             case 1:
@@ -166,19 +163,11 @@ export default class Task extends Vue {
     }
 
     private moveTaskUp(): void {
-        if (this.type === 'pending') {
-            this.$store.dispatch('pending/moveTaskUp', this.id);
-        } else if (this.type === 'daily') {
-            this.$store.dispatch('daily/moveTaskUp', this.id);
-        }
+        this.$store.dispatch(this.type + '/moveTaskUp', this.id);
     }
 
     private moveTaskDown(): void {
-        if (this.type === 'pending') {
-            this.$store.dispatch('pending/moveTaskDown', this.id);
-        } else if (this.type === 'daily') {
-            this.$store.dispatch('daily/moveTaskDown', this.id);
-        }
+        this.$store.dispatch(this.type + '/moveTaskDown', this.id);
     }
 }
 </script>

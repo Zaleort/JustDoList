@@ -3,4 +3,5 @@ interface ITaskDaily {
     name: string;
     notes: string;
     subTasks: ISubTask[];
+    subTaskId: number;
 }

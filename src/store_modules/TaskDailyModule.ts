@@ -18,11 +18,12 @@ export default {
             name: '',
             notes: '',
             subTasks: [],
+            subTaskId: 0,
         } as ITaskDaily,
     },
 
     mutations: {
-        UPDATE_ID_COUNTER(state: any) {
+        INCREASE_ID_COUNTER(state: any) {
             let id = state.idCounter;
             id++;
             state.idCounter = id.toString();
@@ -94,6 +95,10 @@ export default {
             state.current = task;
         },
 
+        INCREASE_CURRENT_SUBTASK_COUNTER(state: any) {
+            state.current.subTaskId++;
+        },
+
         ADD_CURRENT_SUBTASK(state: any, task: ISubTask) {
             state.current.subTasks.push(task);
         },
@@ -121,7 +126,7 @@ export default {
 
     actions: {
         updateCounter: (context: any) => {
-            context.commit('UPDATE_ID_COUNTER');
+            context.commit('INCREASE_ID_COUNTER');
         },
 
         addTask: (context: any, task: ITaskDaily) => {
