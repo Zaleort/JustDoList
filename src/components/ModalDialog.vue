@@ -73,6 +73,7 @@ export default class ModalDialog extends Vue {
 .dialog-footer {
     display: flex;
     justify-content: center;
+    margin-top: 16px;
 }
 
 .dialog-form {
@@ -91,23 +92,6 @@ export default class ModalDialog extends Vue {
     margin: 7px 0;
 }
 
-.dialog-form-input {
-    padding: 7px;
-    font-family: $montserrat;
-    border: 1px solid $grey300;
-    border-radius: 0;
-    transition: border 0.15s;
-}
-
-.dialog-form-input:hover {
-    border-color: $grey400;
-}
-
-.dialog-form-input:focus {
-    outline: none;
-    border-color: $primary;
-}
-
 .dialog-form-textarea {
     line-height: 1.5;
 }
@@ -124,31 +108,10 @@ export default class ModalDialog extends Vue {
     background-color: #fefefe;
 }
 
-.subtask-group {
-    position: relative;
-}
-
-.dialog-subtasks-add, .dialog-subtasks-remove {
-    width: 100%;
-}
-
-.dialog-subtasks-add {
-    padding-left: 30px;
-}
-
-.dialog-subtasks-remove {
-    padding-right: 30px;
-}
-
-.add-subtask-icon, .delete-subtask-icon {
+.delete-subtask-icon {
     position: absolute;
     width: 12px;
     height: 12px;
-}
-
-.add-subtask-icon {
-    left: 9px;
-    top: 9px;
 }
 
 .delete-subtask-icon {

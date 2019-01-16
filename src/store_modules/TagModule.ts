@@ -11,29 +11,20 @@ export default {
     state: {
         tags: [
             {
-                id: '0',
                 name: 'Trabajo',
                 color: '#ff0000',
             },
         ] as ITag[],
-
-        idCounter: '0',
     },
 
     mutations: {
-        UPDATE_ID_COUNTER(state: any) {
-            let id = state.idCounter;
-            id++;
-            state.idCounter = id.toString();
-        },
-
         ADD_TAG(state: any, tag: ITag) {
             state.tags.push(tag);
         },
 
         UPDATE_TAG(state: any, tag: ITag) {
             const i = state.tags.findIndex((t: ITag) => {
-                return t.id === tag.id;
+                return t.name === tag.name;
             });
 
             if (i >= 0) {
@@ -41,9 +32,9 @@ export default {
             }
         },
 
-        DELETE_TAG(state: any, id: string) {
+        DELETE_TAG(state: any, name: string) {
             const i = state.tags.findIndex((t: ITag) => {
-                return t.id === id;
+                return t.name === name;
             });
 
             if (i >= 0) {
@@ -53,10 +44,6 @@ export default {
     },
 
     actions: {
-        updateCounter: (context: any) => {
-            context.commit('UPDATE_ID_COUNTER');
-        },
-
         addTag: (context: any, tag: ITag) => {
             context.commit('ADD_TAG', tag);
         },

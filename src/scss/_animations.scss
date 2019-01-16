@@ -32,13 +32,6 @@
     opacity: 0;
 }
 
-// Permite a Vue mover los demás objetos de la lista cuando uno está siendo eliminado
-
-.absolute {
-    position: absolute;
-    width: inherit;
-}
-
 .move {
     transition: transform 0.5s cubic-bezier(0.33, 0.06, 0.3, 0.95);
 }

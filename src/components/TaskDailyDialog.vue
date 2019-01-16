@@ -9,20 +9,20 @@
                 <input @blur="validateTaskName"
                     @keydown.enter="submit"
                     id="task-daily-name" 
-                    class="dialog-form-input" 
+                    class="text-input" 
                     placeholder="Limpiar los platos" 
                     type="text">
             </label>
 
             <label class="dialog-form-group">
                 <p class="dialog-form-name">Notas</p>
-                <textarea id="task-daily-notes" class="dialog-form-textarea dialog-form-input" rows="4"></textarea>
+                <textarea id="task-daily-notes" class="dialog-form-textarea text-input" rows="4"></textarea>
             </label>
 
             <div class="dialog-form-group">
                 <p class="dialog-form-name">Subtareas</p>
                 <div class="subtask-group" v-for="subTask of currentSubTasks" :key="subTask.id">
-                    <input class="dialog-form-input dialog-subtasks-list dialog-subtasks-remove" 
+                    <input class="text-input right-icon full-width dialog-subtasks-list" 
                         type="text"
                         :value="subTask.name"
                         ref="subTasks"
@@ -33,15 +33,15 @@
                         </svg>
                     </span>
                 </div>
-                <div class="subtask-group">
-                    <span @click="addSubTask" class="icon add-subtask-icon">
+                <div class="relative subtask-group">
+                    <span @click="addSubTask" class="text-input-icon left">
                         <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                             <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
                         </svg>
                     </span>
                     <input @keydown.enter="addSubTask" 
                         id="task-daily-subtask"
-                        class="dialog-form-input dialog-subtasks-list dialog-subtasks-add" 
+                        class="text-input left-icon full-width dialog-subtasks-list" 
                         type="text"
                         placeholder="Añadir nueva subtarea">
                 </div>
@@ -50,7 +50,7 @@
             <div class="dialog-footer">
                 <input type="hidden" id="task-daily-id" value="">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
-                <input @click="procesarTarea" id="task-daily-submit" class="save-button button button-success" type="submit" value="Crear tarea">
+                <input @click="processTask" id="task-daily-submit" class="save-button button button-success" type="submit" value="Crear tarea">
             </div>
         </div>
     </modal-dialog>
@@ -107,7 +107,7 @@ export default class TaskDailyDialog extends Vue {
         this.$store.dispatch('daily/updateCurrentSubTaskName', { id, name });
     }
 
-    private procesarTarea(): void {
+    private processTask(): void {
         const taskId = (document.getElementById('task-daily-id') as HTMLInputElement).value;
         const taskName = (document.getElementById('task-daily-name') as HTMLInputElement).value;
 
@@ -170,7 +170,7 @@ export default class TaskDailyDialog extends Vue {
 
     private closeDialog(): void {
         this.$emit('close');
-        this.$store.dispatch('daily/updateCurrent', { id: '', name: '', notes: '', subTasks: [] });
+        this.$store.dispatch('daily/updateCurrent', { id: '', name: '', notes: '', subTasks: [], subTaskId: 0 });
         this.resetDialog();
     }
 

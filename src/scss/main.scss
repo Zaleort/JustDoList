@@ -34,3 +34,65 @@ textarea {
 .icon:hover {
     cursor: pointer;
 }
+
+// Text Input
+
+.input-error {
+    outline: 2px solid $red500;
+    outline-offset: -1px;
+}
+
+.text-input {
+    padding: 7px;
+    font-family: $montserrat;
+    border: 1px solid $grey300;
+    border-radius: 0;
+    transition: border 0.15s;
+}
+
+.text-input:hover {
+    border-color: $grey400;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: $primary;
+}
+
+.text-input.left-icon {
+    padding-left: 30px;
+}
+
+.text-input.right-icon {
+    padding-right: 30px;
+}
+
+.text-input-icon {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+}
+
+.text-input-icon.left {
+    left: 9px;
+    top: 9px;
+}
+
+.text-input-icon.right {
+    top: 9px;
+    right: 9px;
+}
+
+// Cards
+
+.card {
+    margin-top: 1em;
+    background-color: #ffffff;
+    border-left: 9px solid $primary;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+}

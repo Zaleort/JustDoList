@@ -10,7 +10,7 @@
                     <input @blur="validateTaskName"
                         @keydown.enter="submit"
                         id="task-pending-name" 
-                        class="dialog-form-input" 
+                        class="text-input" 
                         placeholder="Limpiar los platos" 
                         type="text"
                         required>
@@ -18,13 +18,13 @@
 
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Notas</p>
-                    <textarea id="task-pending-notes" class="dialog-form-input dialog-form-textarea" rows="4"></textarea>
+                    <textarea id="task-pending-notes" class="text-input dialog-form-textarea" rows="4"></textarea>
                 </label>
 
                 <div class="dialog-form-group">
                     <p class="dialog-form-name">Subtareas</p>
                     <div class="subtask-group" v-for="subTask of currentSubTasks" :key="subTask.id">
-                        <input class="dialog-form-input dialog-subtasks-list dialog-subtasks-remove" 
+                        <input class="text-input right-icon full-width dialog-subtasks-list" 
                             type="text"
                             :value="subTask.name"
                             ref="subTasks"
@@ -35,15 +35,15 @@
                             </svg>
                         </span>
                     </div>
-                    <div class="subtask-group">
-                        <span @click="addSubTask" class="add-subtask-icon">
+                    <div class="relative subtask-group">
+                        <span @click="addSubTask" class="text-input-icon left">
                             <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                 <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
                             </svg>
                         </span>
                         <input @keydown.enter="addSubTask" 
                             id="task-pending-subtask"
-                            class="dialog-form-input dialog-subtasks-list dialog-subtasks-add" 
+                            class="text-input left-icon full-width dialog-subtasks-list" 
                             type="text"
                             placeholder="Añadir nueva subtarea">
                     </div>
@@ -178,7 +178,7 @@ export default class TaskPendingDialog extends Vue {
 
     private closeDialog(): void {
         this.$emit('close');
-        this.$store.dispatch('pending/updateCurrent', { id: '', name: '', notes: '', subTasks: [] });
+        this.$store.dispatch('pending/updateCurrent', { id: '', name: '', notes: '', subTasks: [], subTaskId: 0 });
         this.resetDialog();
     }
 

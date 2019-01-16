@@ -51,6 +51,12 @@
     margin-bottom: 3em; 
 }
 
+// Position
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+.full-width { width: 100%; }
+
 // Font color
 
 .font-white { color: white; }
@@ -123,11 +129,6 @@
     color: $blue800;
     border-color: $blue800;
     background-color: $blue50;
-}
-
-.input-error {
-    outline: 2px solid $red500;
-    outline-offset: -1px;
 }
 
 @media only screen and (min-width: $laptop) {

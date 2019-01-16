@@ -1,6 +1,6 @@
 <template>
-    <div class="task-card" ref="task">
-        <div class="task-card-header">
+    <div class="card task-card" ref="task">
+        <div class="card-header">
             <div class="checkbox-group">
                 <button @click="completeTask" class="checkbox-button checkbox-indicator"></button>
                 <p @click="openEditTask" class="checkbox-title">{{ name }}</p>
@@ -22,7 +22,6 @@
                     v-if="showOptionsMenu">
                 </context-menu>
             </span>
-            
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div ref="subTasks" class="task-subtasks-list" v-if="hasSubTasks">
@@ -49,7 +48,7 @@ export default class Task extends Vue {
     @Prop() private notes!: string;
     @Prop() private subTasks!: ISubTask[];
     @Prop({ default: 0 }) private subTaskId!: number;
-    @Prop() private tags!: object[];
+    @Prop() private tags!: ITag[];
     @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
@@ -134,9 +133,7 @@ export default class Task extends Vue {
         }
 
         document.getElementById('task-' + this.type + '-heading')!.innerHTML = heading;
-
         this.$store.dispatch(this.type + '/updateCurrent', this.getTaskObject());
-
         this.$emit('openDialog');
     }
 
@@ -177,16 +174,7 @@ export default class Task extends Vue {
     @import '../scss/variables';
 
     .task-card {
-        margin-top: 1em;
-        background-color: #ffffff;
-        border-left: 9px solid $primary;
         padding: 21px 16px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .task-card-header {
-        display: flex;
-        align-items: center;
     }
 
     .task-notes {
