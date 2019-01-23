@@ -24,7 +24,7 @@
             <section class="tasks-daily-section" :key="'daily'">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas diarias</h2>
-                    <img @click="openDailyDialog" 
+                    <img @click="openDailyDialog(false)" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tarea diaria">
@@ -40,7 +40,7 @@
                             a medianoche y llevan un seguimiento de tu racha.
                         </p>
                     </div>
-                    <Task @openDialog="showTaskDailyDialog = true" v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
+                    <Task @openDialog="openDailyDialog(true)" v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
                 </transition-group>
             </section>
 
@@ -48,7 +48,7 @@
             <section class="tasks-pending-section" :key="'pending'">
                 <div class="tasks-header">
                     <h2 class="tasks-heading">Tareas pendientes</h2>
-                    <img @click="openPendingDialog" 
+                    <img @click="openPendingDialog(false)" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tare pendiente">
@@ -64,13 +64,19 @@
                             las tareas pendientes, y una vez completadas se moverán a tu historial de tareas completadas.
                         </p>
                     </div>
-                    <Task @openDialog="showTaskPendingDialog = true" v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
+                    <Task @openDialog="openPendingDialog(true)" v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
                 </transition-group>
             </section>
         </transition-group>
 
-        <TaskPendingDialog :show="showTaskPendingDialog" @close="showTaskPendingDialog = false" />
-        <TaskDailyDialog :show="showTaskDailyDialog" @close="showTaskDailyDialog = false" />
+        <TaskPendingDialog :show="showTaskPendingDialog" 
+            @close="showTaskPendingDialog = false" 
+            :heading="taskPendingHeading" 
+            :submitText="taskSubmit" />
+        <TaskDailyDialog :show="showTaskDailyDialog" 
+            @close="showTaskDailyDialog = false" 
+            :heading="taskDailyHeading" 
+            :submitText="taskSubmit" />
         <TagDialog :show="showTagDialog" @close="showTagDialog = false" />
     </main>
 </template>
@@ -82,6 +88,7 @@ import TaskPendingDialog from '../components/TaskPendingDialog.vue';
 import TaskDailyDialog from '../components/TaskDailyDialog.vue';
 import TagDialog from '../components/TagDialog.vue';
 import { mapState } from 'vuex';
+import TaskDailyModule from '@/store_modules/TaskDailyModule';
 
 @Component({
     components: { Task, TaskPendingDialog, TaskDailyDialog, TagDialog },
@@ -99,15 +106,31 @@ export default class TasksView extends Vue {
     private showTaskDailyDialog: boolean = false;
     private showTagDialog: boolean = false;
 
-    private openDailyDialog() {
-        document.getElementById('task-daily-heading')!.innerHTML = 'Crear nueva tarea diaria';
-        (document.getElementById('task-daily-submit') as HTMLInputElement).value = 'Crear tarea';
+    private taskPendingHeading: string = 'Crear nueva tarea pendiente';
+    private taskDailyHeading: string = 'Crear nueva tarea diaria';
+    private taskSubmit: string = 'Crear tarea';
+
+    private openDailyDialog(isEditing: boolean) {
+        if (isEditing) {
+            this.taskDailyHeading = 'Editar tarea diaria';
+            this.taskSubmit = 'Guardar';
+        } else {
+            this.taskDailyHeading = 'Crear nueva tarea diaria';
+            this.taskSubmit = 'Crear tarea';
+        }
+
         this.showTaskDailyDialog = true;
     }
 
-    private openPendingDialog() {
-        document.getElementById('task-pending-heading')!.innerHTML = 'Crear nueva tarea pendiente';
-        (document.getElementById('task-pending-submit') as HTMLInputElement).value = 'Crear tarea';
+    private openPendingDialog(isEditing: boolean) {
+        if (isEditing) {
+            this.taskPendingHeading = 'Editar tarea pendiente';
+            this.taskSubmit = 'Guardar';
+        } else {
+            this.taskPendingHeading = 'Crear nueva tarea pendiente';
+            this.taskSubmit = 'Crear tarea';
+        }
+
         this.showTaskPendingDialog = true;
     }
 

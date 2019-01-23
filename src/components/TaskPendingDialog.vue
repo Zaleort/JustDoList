@@ -1,16 +1,17 @@
 <template>
     <modal-dialog :show="show" @close="closeDialog">
         <div class="dialog-header">
-            <h1 id="task-pending-heading" class="font-white dialog-title">Nueva tarea pendiente</h1>
+            <h1 ref="taskHeading" class="font-white dialog-title">{{ heading }}</h1>
             </div>
-            <div id="task-pending-form" class="dialog-form">
+            <div class="dialog-form">
 
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Tarea</p>
                     <input @blur="validateTaskName"
                         @keydown.enter="submit"
-                        id="task-pending-name" 
-                        class="text-input" 
+                        ref="taskName" 
+                        class="text-input"
+                        v-model="currentTask.name"
                         placeholder="Limpiar los platos" 
                         type="text"
                         required>
@@ -18,22 +19,22 @@
 
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Notas</p>
-                    <textarea id="task-pending-notes" class="text-input dialog-form-textarea" rows="4"></textarea>
+                    <textarea ref="taskNotes" class="text-input dialog-form-textarea" rows="4" v-model="currentTask.notes"></textarea>
                 </label>
 
                 <div class="dialog-form-group">
                     <p class="dialog-form-name">Subtareas</p>
-                    <div class="subtask-group" v-for="subTask of currentSubTasks" :key="subTask.id">
-                        <input class="text-input right-icon full-width dialog-subtasks-list" 
-                            type="text"
-                            :value="subTask.name"
-                            ref="subTasks"
-                            @blur="updateSubTaskName(subTask.id, $event)">
+                    <div class="relative subtask-group" v-for="subTask of currentSubTasks" :key="subTask.id">
                         <span @click="deleteSubTask(subTask.id)" class="delete-subtask-icon">
                             <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                 <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
                             </svg>
                         </span>
+                        <input class="text-input right-icon full-width dialog-subtasks-list" 
+                            type="text"
+                            :value="subTask.name"
+                            ref="subTasks"
+                            @blur="updateSubTaskName(subTask.id, $event)">
                     </div>
                     <div class="relative subtask-group">
                         <span @click="addSubTask" class="text-input-icon left">
@@ -42,7 +43,7 @@
                             </svg>
                         </span>
                         <input @keydown.enter="addSubTask" 
-                            id="task-pending-subtask"
+                            ref="taskSubTask"
                             class="text-input left-icon full-width dialog-subtasks-list" 
                             type="text"
                             placeholder="Añadir nueva subtarea">
@@ -58,9 +59,9 @@
                 </label>
 
                 <div class="dialog-footer">
-                    <input type="hidden" id="task-pending-id" value="">
+                    <input type="hidden" ref="taskId" :value="currentTask.id">
                     <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
-                    <input @click="processTask" id="task-pending-submit" class="save-button button button-success" type="submit" value="Crear tarea">
+                    <input @click="processTask" ref="taskSubmit" class="save-button button button-success" type="submit" :value="submitText">
                 </div>
             </div>
     </modal-dialog>
@@ -76,17 +77,31 @@ import ModalDialog from './ModalDialog.vue';
 
 export default class TaskPendingDialog extends Vue {
     @Prop() private show!: boolean;
+    @Prop() private heading!: string;
+    @Prop() private submitText!: string;
 
     get currentTask() {
-        return this.$store.state.pending.current;
+        if (this.$store) {
+            return this.$store.state.pending.current;
+        }
+
+        return null;
     }
 
     get currentSubTasks() {
-        return this.$store.state.pending.current.subTasks;
+        if (this.$store) {
+            return this.$store.state.pending.current.subTasks;
+        }
+
+        return null;
     }
 
     get currentSubTaskIdCounter() {
-        return this.$store.state.pending.current.subTaskId;
+        if (this.$store) {
+            return this.$store.state.pending.current.subTaskId;
+        }
+
+        return null;
     }
 
     private addSubTask(): void {
@@ -94,7 +109,7 @@ export default class TaskPendingDialog extends Vue {
 
         this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
         const taskId = this.currentSubTaskIdCounter;
-        const taskName = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
+        const taskName = (this.$refs.taskSubTask as HTMLInputElement).value;
 
         if (!taskName || taskName.trim().length === 0) { return; }
 
@@ -105,7 +120,7 @@ export default class TaskPendingDialog extends Vue {
         };
 
         this.$store.dispatch('pending/addCurrentSubTask', task);
-        (document.getElementById('task-pending-subtask') as HTMLInputElement).value = '';
+        (this.$refs.taskSubTask as HTMLInputElement).value = '';
     }
 
     private deleteSubTask(id: string): void {
@@ -118,14 +133,14 @@ export default class TaskPendingDialog extends Vue {
     }
 
     private processTask(): void {
-        const taskId = (document.getElementById('task-pending-id') as HTMLInputElement).value;
-        const taskName = (document.getElementById('task-pending-name') as HTMLInputElement).value;
+        const taskId = (this.$refs.taskId as HTMLInputElement).value;
+        const taskName = (this.$refs.taskName as HTMLInputElement).value;
 
         if (!this.validateTaskName()) { return; }
 
-        const taskNotes = (document.getElementById('task-pending-notes') as HTMLInputElement).value;
+        const taskNotes = (this.$refs.taskNotes as HTMLInputElement).value;
         const subTasks = this.currentSubTasks;
-        const lastSubTask = (document.getElementById('task-pending-subtask') as HTMLInputElement).value;
+        const lastSubTask = (this.$refs.taskSubTask as HTMLInputElement).value;
 
         if (lastSubTask) {
             this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
@@ -158,7 +173,7 @@ export default class TaskPendingDialog extends Vue {
     }
 
     private validateTaskName(): boolean {
-        const taskName = document.getElementById('task-pending-name') as HTMLInputElement;
+        const taskName = this.$refs.taskName as HTMLInputElement;
 
         if (!taskName.value || taskName.value.trim().length === 0) {
             taskName.classList.add('input-error');
@@ -172,8 +187,8 @@ export default class TaskPendingDialog extends Vue {
     // Evita que se muestre el outline de error, forzando el blur antes que
     // processTask
     private submit() {
-        document.getElementById('task-pending-name')!.blur();
-        document.getElementById('task-pending-submit')!.click();
+        (this.$refs.taskName as HTMLInputElement).blur();
+        (this.$refs.taskSubmit as HTMLElement).click();
     }
 
     private closeDialog(): void {
@@ -183,14 +198,14 @@ export default class TaskPendingDialog extends Vue {
     }
 
     private resetDialog(): void {
-        (document.getElementById('task-pending-id') as HTMLInputElement).value = '';
+        (this.$refs.taskId as HTMLInputElement).value = '';
 
-        const taskName = document.getElementById('task-pending-name') as HTMLInputElement;
+        const taskName = this.$refs.taskName as HTMLInputElement;
         taskName.value = '';
         taskName.classList.remove('input-error');
 
-        (document.getElementById('task-pending-notes') as HTMLInputElement).value = '';
-        (document.getElementById('task-pending-subtask') as HTMLInputElement)!.value = '';
+        (this.$refs.taskNotes as HTMLInputElement).value = '';
+        (this.$refs.taskSubTask as HTMLInputElement)!.value = '';
     }
 }
 </script>

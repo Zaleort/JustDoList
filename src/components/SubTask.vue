@@ -25,11 +25,7 @@ export default class SubTask extends Vue {
             taskId: this.taskId,
         };
 
-        if (this.taskType === 'pending') {
-            this.$store.dispatch('pending/updateCheck', payload);
-        } else {
-            this.$store.dispatch('daily/updateCheck', payload);
-        }
+        this.$store.dispatch(this.taskType + '/updateCheck', payload);
     }
 }
 </script>

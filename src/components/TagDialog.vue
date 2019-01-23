@@ -13,7 +13,7 @@
                         </svg>
                     </span>
                     <input @keydown.enter="addTag"
-                        id="tag-name" 
+                        ref="tagName" 
                         class="text-input left-icon full-width" 
                         placeholder="Trabajo" 
                         type="text">
@@ -32,7 +32,7 @@
             </div>
             <div class="dialog-footer">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
-                <input id="tag-dialog-submit" class="save-button button button-success" type="submit" value="Guardar">
+                <input ref="tagSubmit" class="save-button button button-success" type="submit" value="Guardar">
             </div>
         </div>
     </modal-dialog>
@@ -55,14 +55,24 @@ export default class TagDialog extends Vue {
     }
 
     private addTag(): void {
-        const tagName = (document.getElementById('tag-name') as HTMLInputElement).value;
+        const tagName = (this.$refs.tagName as HTMLInputElement);
+        if (!this.validateTagName(tagName.value)) { return; }
 
         const tag = {
-            name: tagName,
+            name: tagName.value,
             color: '#7400C9',
         };
 
+        tagName.value = '';
         this.$store.dispatch('tag/addTag', tag);
+    }
+
+    private validateTagName(name: string): boolean {
+        if (!name || name.trim().length === 0) {
+            return false;
+        }
+
+        return true;
     }
 
     private closeDialog(): void {

@@ -103,7 +103,7 @@ export default {
             state.current.subTasks.push(task);
         },
 
-        DELETE_CURRENT_SUBTASK(state: any, id: string) {
+        DELETE_CURRENT_SUBTASK(state: any, id: number) {
             const i = state.current.subTasks.findIndex((e: ISubTask) => {
                 return e.id === id;
             });

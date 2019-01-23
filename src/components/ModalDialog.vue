@@ -52,12 +52,13 @@ export default class ModalDialog extends Vue {
     z-index: 201;
     margin: 0 auto;
     margin-top: 4em;
-    max-width: $tablet;
+    max-width: $mobile-l;
     background-color: #fefefe;
     border-radius: 3px;
 }
 
 .dialog-header {
+    text-align: center;
     background-color: $primary;
     padding: 28px 16px;
     border-radius: 3px 3px 0 0;
@@ -109,13 +110,10 @@ export default class ModalDialog extends Vue {
 }
 
 .delete-subtask-icon {
+    display: none;
     position: absolute;
     width: 12px;
     height: 12px;
-}
-
-.delete-subtask-icon {
-    display: none;
     top: 9px;
     right: 9px;
 }
@@ -146,6 +144,12 @@ export default class ModalDialog extends Vue {
 
 .dialog-anim {
     animation: fade-in-up-slight 0.4s ease;
+}
+
+@media only screen and (min-width: $tablet) {
+    .dialog-content {
+        width: $mobile-l;
+    }
 }
 
 @media only screen and (min-width: $laptop) {

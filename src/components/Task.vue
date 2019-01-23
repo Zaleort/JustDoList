@@ -7,8 +7,8 @@
             </div>
             <span @click="toggleSubTasks" v-if="hasSubTasks" class="icon expand-icon" ref="expandIcon">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                <path d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
-            </svg>
+                    <path d="M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z"></path>
+                </svg>
             </span>
             <span class="task-options-icon">
                 <svg @click="showOptionsMenu = !showOptionsMenu" class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -90,7 +90,11 @@ export default class Task extends Vue {
     }
 
     get hasNotes(): boolean {
-        return this.notes.length > 0 || this.notes.trim().length > 0;
+        if (this.notes) {
+            return this.notes.length > 0 || this.notes.trim().length > 0;
+        }
+
+        return false;
     }
 
     get hasSubTasks(): boolean {
@@ -119,20 +123,6 @@ export default class Task extends Vue {
     }
 
     private openEditTask(): void {
-        (document.getElementById('task-' + this.type + '-id') as HTMLInputElement).value = this.id;
-        (document.getElementById('task-' + this.type + '-name') as HTMLInputElement).value = this.name;
-        (document.getElementById('task-' + this.type + '-notes') as HTMLInputElement).value = this.notes;
-        (document.getElementById('task-' + this.type + '-submit') as HTMLInputElement).value = 'Guardar';
-
-        let heading = 'Editar tarea';
-
-        if (this.type === 'pending') {
-            heading = 'Editar tarea pendiente';
-        } else if (this.type === 'daily') {
-            heading = 'Editar tarea diaria';
-        }
-
-        document.getElementById('task-' + this.type + '-heading')!.innerHTML = heading;
         this.$store.dispatch(this.type + '/updateCurrent', this.getTaskObject());
         this.$emit('openDialog');
     }
@@ -196,13 +186,13 @@ export default class Task extends Vue {
     }
 
     .task-options-icon {
+        width: 28px;
+        height: 28px;
         position: relative;
         margin-left: auto;
     }
 
     .task-options-icon svg {
-        width: 28px;
-        height: 28px;
         fill: $grey400;
     }
 
@@ -217,6 +207,7 @@ export default class Task extends Vue {
 
     .task-subtasks-hide {
         opacity: 0;
+        visibility: hidden;
         overflow: hidden;
         height: 0;
     }
