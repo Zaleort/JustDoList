@@ -16,6 +16,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Tag extends Vue {
+    @Prop() private id!: string;
     @Prop() private name!: string;
     @Prop() private color!: string;
 }

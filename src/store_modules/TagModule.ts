@@ -11,13 +11,22 @@ export default {
     state: {
         tags: [
             {
+                id: '0',
                 name: 'Trabajo',
                 color: '#ff0000',
             },
         ] as ITag[],
+
+        idCounter: '0',
     },
 
     mutations: {
+        INCREASE_ID_COUNTER(state: any) {
+            let id = state.idCounter;
+            id++;
+            state.idCounter = id.toString();
+        },
+
         ADD_TAG(state: any, tag: ITag) {
             state.tags.push(tag);
         },

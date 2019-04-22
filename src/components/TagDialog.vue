@@ -27,7 +27,7 @@
                     enter-active-class="animate faster fade-in-up-slight"
                     leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
-                        <tag v-for="tag in tags" :key="tag.name" v-bind="tag" />
+                        <tag v-for="tag in tags" :key="tag.id" v-bind="tag" />
                 </transition-group>
             </div>
             <div class="dialog-footer">
@@ -54,11 +54,21 @@ export default class TagDialog extends Vue {
         return this.$store.state.tag.tags;
     }
 
+    get idCounter() {
+        return this.$store.state.tag.idCounter;
+    }
+
     private addTag(): void {
+        let tag: ITag;
+
+        this.$store.commit('tag/INCREASE_ID_COUNTER');
+        const tagId = this.idCounter;
+
         const tagName = (this.$refs.tagName as HTMLInputElement);
         if (!this.validateTagName(tagName.value)) { return; }
 
-        const tag = {
+        tag = {
+            id: tagId,
             name: tagName.value,
             color: '#7400C9',
         };

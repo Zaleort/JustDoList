@@ -33,7 +33,6 @@
                         <input class="text-input right-icon full-width dialog-subtasks-list" 
                             type="text"
                             :value="subTask.name"
-                            ref="subTasks"
                             @blur="updateSubTaskName(subTask.id, $event)">
                     </div>
                     <div class="relative subtask-group">
@@ -81,27 +80,15 @@ export default class TaskPendingDialog extends Vue {
     @Prop() private submitText!: string;
 
     get currentTask() {
-        if (this.$store) {
-            return this.$store.state.pending.current;
-        }
-
-        return null;
+        return this.$store.state.pending.current;
     }
 
     get currentSubTasks() {
-        if (this.$store) {
-            return this.$store.state.pending.current.subTasks;
-        }
-
-        return null;
+        return this.$store.state.pending.current.subTasks;
     }
 
     get currentSubTaskIdCounter() {
-        if (this.$store) {
-            return this.$store.state.pending.current.subTaskId;
-        }
-
-        return null;
+        return this.$store.state.pending.current.subTaskId;
     }
 
     private addSubTask(): void {
