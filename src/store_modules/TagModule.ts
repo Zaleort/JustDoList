@@ -33,11 +33,11 @@ export default {
 
         UPDATE_TAG(state: any, tag: ITag) {
             const i = state.tags.findIndex((t: ITag) => {
-                return t.name === tag.name;
+                return t.id === tag.id;
             });
 
             if (i >= 0) {
-                Vue.set(state.tasks, i, tag);
+                Vue.set(state.tags, i, tag);
             }
         },
 

@@ -1,5 +1,5 @@
 <template>
-    <div ref="menu" class="cm-container">
+    <div ref="menu" :class="'cm-container cm-' + position">
         <ul class="cm-list">
             <li :class="checkDisabled(item.disabled)"
                 @click="emitAction(item.disabled, index)"
@@ -18,6 +18,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class ContextMenu extends Vue {
     @Prop() private items!: object[];
+    @Prop({default: 'right'}) private position!: string;
 
     private mounted() {
         document.addEventListener('click', this.handle, true);
@@ -60,8 +61,15 @@ export default class ContextMenu extends Vue {
         position: absolute;
         user-select: none;
         width: 150px;
-        right: 0;
         z-index: 9999;
+    }
+
+    .cm-right {
+        right: 0;
+    }
+
+    .cm-left {
+        left: 0;
     }
 
     .cm-list {

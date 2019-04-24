@@ -1,11 +1,19 @@
 <template>
     <div class="card tag-card" ref="tag">
         <div class="card-header">
-            <p class="m-0">{{ name }}</p>
+            <input ref="tagName" @blur="updateName" class="tag-name" type="text" :value="name">
             <span class="tag-select-color-icon">
-                <svg class="icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path d="M50.75 333.25c-12 12-18.75 28.28-18.75 45.26V424L0 480l32 32 56-32h45.49c16.97 0 33.25-6.74 45.25-18.74l126.64-126.62-128-128L50.75 333.25zM483.88 28.12c-37.47-37.5-98.28-37.5-135.75 0l-77.09 77.09-13.1-13.1c-9.44-9.44-24.65-9.31-33.94 0l-40.97 40.97c-9.37 9.37-9.37 24.57 0 33.94l161.94 161.94c9.44 9.44 24.65 9.31 33.94 0L419.88 288c9.37-9.37 9.37-24.57 0-33.94l-13.1-13.1 77.09-77.09c37.51-37.48 37.51-98.26.01-135.75z"></path>
+                <svg @click="showOptionsMenu = !showOptionsMenu" class="icon" width="24" height="24" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                 </svg>
+                <context-menu 
+                    @action="handleOptionsMenu"
+                    @close="showOptionsMenu = false" 
+                    :items="options"
+                    :position="'none'" 
+                    v-if="showOptionsMenu">
+                </context-menu>
             </span>
         </div>
     </div>
@@ -13,17 +21,82 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import ContextMenu from './ContextMenu.vue';
 
-@Component
+@Component({
+    components: { ContextMenu },
+})
+
 export default class Tag extends Vue {
     @Prop() private id!: string;
     @Prop() private name!: string;
     @Prop() private color!: string;
+
+    private showOptionsMenu: boolean = false;
+    private options: object[] = [
+        {
+            name: 'Editar',
+            src: require('../assets/pen-solid.svg'),
+            disabled: false,
+        },
+        {
+            name: 'Color',
+            src: require('../assets/eye-dropper-solid.svg'),
+            disabled: false,
+        },
+        {
+            name: 'Borrar',
+            src: require('../assets/trash-solid.svg'),
+            disabled: false,
+        },
+    ];
+
+    private updateName() {
+        const eName = this.$refs.tagName as HTMLInputElement;
+        const name = eName.value;
+        const current = this.$store.state.tag.tags[this.id].name;
+
+        if (!name) {
+            eName.value = current;
+            return;
+        }
+
+        if (name === current) { return; }
+
+        const tag = {
+            id: this.id,
+            name,
+            color: this.color,
+        } as ITag;
+
+        this.$store.dispatch('tag/updateTag', tag);
+    }
+
+    private handleOptionsMenu(payload: number): void {
+        switch (payload) {
+            case 0:
+                (this.$refs.tagName as HTMLInputElement).focus();
+                break;
+            case 1:
+                // Cambiar color
+                break;
+            case 2:
+                // Borrar etiqueta
+                break;
+        }
+    }
 }
 </script>
 
 <style lang="scss">
     @import '../scss/variables';
+
+    .tag-name {
+        border: none;
+        background-color: white;
+        font-family: $montserrat;
+        width: 100%;
+    }
 
     .tag-card {
         border-left-width: 5px;
@@ -33,12 +106,14 @@ export default class Tag extends Vue {
     }
 
     .tag-select-color-icon {
-        width: 13px;
-        height: 13px;
         margin-left: 7px;
     }
 
     .tag-select-color-icon svg {
         fill: $grey400;
+    }
+
+    .tag-select-color-icon:hover svg {
+        fill: $grey800;
     }
 </style>

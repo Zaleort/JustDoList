@@ -96,6 +96,19 @@ export default class TagDialog extends Vue {
 
     .tag-cloud {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+    }
+
+    @media only screen and (min-width: $mobile-l) {
+        .tag-cloud {
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .tag-cloud > .tag-card {
+            flex-grow: 1;
+            flex: 0 1 46%;
+        }
     }
 </style>
