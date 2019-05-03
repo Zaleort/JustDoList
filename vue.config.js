@@ -15,8 +15,13 @@ module.exports = {
           chunks: ['chunk-vendors', 'chunk-common', 'index']
         },
     },
-    
+
     configureWebpack: {
         devtool: 'source-map'
+    },
+
+    pwa: {
+      name: 'JustDoList',
+      themeColor: '#7400C9'
     }
 }
