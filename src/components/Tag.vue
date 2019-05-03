@@ -11,7 +11,7 @@
                     @action="handleOptionsMenu"
                     @close="showOptionsMenu = false" 
                     :items="options"
-                    :position="'none'" 
+                    :position="'right'" 
                     v-if="showOptionsMenu">
                 </context-menu>
             </span>
@@ -37,24 +37,21 @@ export default class Tag extends Vue {
         {
             name: 'Editar',
             src: require('../assets/pen-solid.svg'),
-            disabled: false,
         },
         {
             name: 'Color',
             src: require('../assets/eye-dropper-solid.svg'),
-            disabled: false,
         },
         {
             name: 'Borrar',
             src: require('../assets/trash-solid.svg'),
-            disabled: false,
         },
     ];
 
     private updateName() {
         const eName = this.$refs.tagName as HTMLInputElement;
         const name = eName.value;
-        const current = this.$store.state.tag.tags[this.id].name;
+        const current = this.$store.state.tag.tags.find((x: ITag) => x.id === this.id).name;
 
         if (!name) {
             eName.value = current;
@@ -72,6 +69,10 @@ export default class Tag extends Vue {
         this.$store.dispatch('tag/updateTag', tag);
     }
 
+    private deleteTag() {
+        this.$store.dispatch('tag/deleteTag', this.id);
+    }
+
     private handleOptionsMenu(payload: number): void {
         switch (payload) {
             case 0:
@@ -81,7 +82,7 @@ export default class Tag extends Vue {
                 // Cambiar color
                 break;
             case 2:
-                // Borrar etiqueta
+                this.deleteTag();
                 break;
         }
     }
@@ -106,6 +107,9 @@ export default class Tag extends Vue {
     }
 
     .tag-select-color-icon {
+        // Relative para prevenir que el menú contextual se posicione
+        // en la derecha de la pantalla
+        position: relative;
         margin-left: 7px;
     }
 

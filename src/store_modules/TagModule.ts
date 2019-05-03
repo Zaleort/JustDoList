@@ -41,9 +41,9 @@ export default {
             }
         },
 
-        DELETE_TAG(state: any, name: string) {
+        DELETE_TAG(state: any, id: string) {
             const i = state.tags.findIndex((t: ITag) => {
-                return t.name === name;
+                return t.id === id;
             });
 
             if (i >= 0) {

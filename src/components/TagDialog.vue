@@ -1,10 +1,17 @@
 <template>
     <modal-dialog :show="show" @close="closeDialog">
-        <div class="dialog-header">
+        <div class="dialog-header" :key="'header'">
             <h1 class="font-white dialog-title">Configuración de etiquetas</h1>
         </div>
-        <div class="dialog-form">
-            <label class="dialog-form-group">
+
+        <transition-group
+            tag="div"
+            class="dialog-form"
+            enter-active-class="animate faster fade-in-up-slight"
+            leave-active-class="absolute animate fastest fade-out"
+            move-class="move">
+            
+            <label class="dialog-form-group" :key="'form'">
                 <p class="dialog-form-name">Añadir nueva etiqueta</p>
                 <div class="relative">
                     <span @click="addTag" class="text-input-icon left">
@@ -19,22 +26,21 @@
                         type="text">
                 </div>
             </label>
-            <div>
+            <div :key="'tags'">
                 <p class="dialog-form-name">Etiquetas</p>
                 <transition-group
                     tag="div"
                     class="tag-cloud"
                     enter-active-class="animate faster fade-in-up-slight"
-                    leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
                         <tag v-for="tag in tags" :key="tag.id" v-bind="tag" />
                 </transition-group>
             </div>
-            <div class="dialog-footer">
+            <div class="dialog-footer" :key="'footer'">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
                 <input ref="tagSubmit" class="save-button button button-success" type="submit" value="Guardar">
             </div>
-        </div>
+        </transition-group>
     </modal-dialog>
 </template>
 
