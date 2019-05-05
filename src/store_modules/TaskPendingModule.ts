@@ -22,6 +22,7 @@ export default {
             notes: '',
             subTasks: [],
             subTaskId: 0,
+            tags: [ '0', '2' ],
         } as ITaskPending,
     },
 
@@ -128,6 +129,29 @@ export default {
                 state.current.subTasks[i].name = subTask.name;
             }
         },
+
+        // Tags of Current Task
+        ADD_CURRENT_TAG(state: any, tagId: string) {
+            const i = state.current.tags.findIndex((t: string) => {
+                return t === tagId;
+            });
+
+            if (i === -1) {
+                state.current.tags.push(tagId);
+            }
+        },
+
+        // Tags
+        ADD_TAG(state: any, args: any) {
+            const {tag, id} = args;
+            const i = state.tasks.findIndex((t: ITaskPending) => {
+                return t.id === id;
+            });
+
+            if (i >= 0) {
+                state.tasks[i].tags.push(tag);
+            }
+        },
     },
 
     actions: {
@@ -176,6 +200,17 @@ export default {
 
         updateCurrentSubTaskName: (context: any, subTask: any) => {
             context.commit('UPDATE_CURRENT_SUBTASK_NAME', subTask);
+        },
+
+        // Tags of Current Task
+        addCurrentTag: (context: any, tagId: string) => {
+            context.commit('ADD_CURRENT_TAG', tagId);
+        },
+
+        // Tags
+        addTag: (context: any, args: any) => {
+            const {tag, id} = args;
+            context.commit('ADD_TAG', args);
         },
     },
 };

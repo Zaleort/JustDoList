@@ -4,4 +4,5 @@ interface ITaskPending {
     notes: string;
     subTasks: ISubTask[];
     subTaskId: number;
+    tags: string[];
 }

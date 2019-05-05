@@ -53,9 +53,39 @@
                     <p class="dialog-form-name">Fecha límite</p>
                 </label>
 
-                <label class="dialog-form-group">
+                <div class="dialog-form-group">
                     <p class="dialog-form-name">Etiquetas</p>
-                </label>
+                    <div class="dialog-form-group">
+                        <div class="relative">
+                            <span class="text-input-icon left">
+                                <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                    <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+                                </svg>
+                            </span>
+                            <input
+                                @focus="openTagList = true"
+                                ref="taskAddTag"
+                                class="text-input left-icon full-width" 
+                                type="text"
+                                placeholder="Añadir etiqueta">
+                            <div v-show="openTagList" class="task-add-tag-container">
+                                <ul class="task-add-tag-list">
+                                    <li @click.prevent="addTag(tag.id)"
+                                        @blur="openTagList = false"
+                                        v-for="tag of selectTags" 
+                                        :key="tag.id">
+                                        {{ tag.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div v-for="tag of currentTagCloud" v-bind:key="tag.id">
+                            <span>{{ tag.name }}</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="dialog-footer">
                     <input type="hidden" ref="taskId" :value="currentTask.id">
@@ -79,6 +109,8 @@ export default class TaskPendingDialog extends Vue {
     @Prop() private heading!: string;
     @Prop() private submitText!: string;
 
+    private openTagList = false;
+
     get currentTask() {
         return this.$store.state.pending.current;
     }
@@ -89,6 +121,32 @@ export default class TaskPendingDialog extends Vue {
 
     get currentSubTaskIdCounter() {
         return this.$store.state.pending.current.subTaskId;
+    }
+
+    get currentTags() {
+         return this.$store.state.pending.current.tags;
+    }
+
+    get currentTagCloud() {
+        const ids = this.$store.state.pending.current.tags;
+        const tags = this.$store.state.tag.tags.filter((t: ITag) => {
+            for (const id of ids) {
+                if (id === t.id) {
+                    return true;
+                }
+
+                continue;
+            }
+
+            return false;
+        });
+
+        return tags;
+    }
+
+    get selectTags() {
+        const all = this.$store.state.tag.tags.slice();
+        return all;
     }
 
     private addSubTask(): void {
@@ -119,6 +177,11 @@ export default class TaskPendingDialog extends Vue {
         this.$store.dispatch('pending/updateCurrentSubTaskName', { id, name });
     }
 
+    private addTag(id: string) {
+        this.openTagList = false;
+        this.$store.dispatch('pending/addCurrentTag', id);
+    }
+
     private processTask(): void {
         const taskId = (this.$refs.taskId as HTMLInputElement).value;
         const taskName = (this.$refs.taskName as HTMLInputElement).value;
@@ -128,6 +191,7 @@ export default class TaskPendingDialog extends Vue {
         const taskNotes = (this.$refs.taskNotes as HTMLInputElement).value;
         const subTasks = this.currentSubTasks;
         const lastSubTask = (this.$refs.taskSubTask as HTMLInputElement).value;
+        const tags = this.currentTags;
 
         if (lastSubTask) {
             this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
@@ -146,6 +210,7 @@ export default class TaskPendingDialog extends Vue {
             notes: taskNotes,
             subTasks,
             subTaskId: this.currentSubTaskIdCounter,
+            tags,
         };
 
         if (!task.id) {
@@ -180,7 +245,15 @@ export default class TaskPendingDialog extends Vue {
 
     private closeDialog(): void {
         this.$emit('close');
-        this.$store.dispatch('pending/updateCurrent', { id: '', name: '', notes: '', subTasks: [], subTaskId: 0 });
+        this.$store.dispatch('pending/updateCurrent',
+            {
+                id: '',
+                name: '',
+                notes: '',
+                subTasks: [],
+                subTaskId: 0,
+                tags: [],
+            });
         this.resetDialog();
     }
 
@@ -196,3 +269,41 @@ export default class TaskPendingDialog extends Vue {
     }
 }
 </script>
+
+<style lang="scss">
+    @import '../scss/variables';
+
+    .task-add-tag-container {
+        position: absolute;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        left: 0;
+        width: 100%;
+        overflow: auto;
+        max-height: 125px;
+        z-index: 9999;
+    }
+
+    .task-add-tag-list {
+        background-color: #fff;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+
+        li {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            font-style: normal;
+            font-size: 0.9em;
+            padding: 8px 12px;
+            transition: all 0.15s;
+        }
+
+        li:hover {
+        cursor: pointer;
+        background-color: $grey100;
+    }
+    }
+</style>
+

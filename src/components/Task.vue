@@ -28,7 +28,12 @@
             <SubTask v-for="subTask in subTasks" :key="subTask.id" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
         <div class="task-card-footer">
-            
+            <span v-if="dateDeadline">
+                Finaliza el {{ dateDeadline }}
+            </span>
+            <span v-if="tags && tags.length > 0" class="task-tags-icon">
+                Tiene etiquetas
+            </span>
         </div>
     </div>
 </template>
@@ -48,7 +53,7 @@ export default class Task extends Vue {
     @Prop() private notes!: string;
     @Prop() private subTasks!: ISubTask[];
     @Prop({ default: 0 }) private subTaskId!: number;
-    @Prop() private tags!: ITag[];
+    @Prop() private tags!: string[];
     @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
@@ -111,6 +116,7 @@ export default class Task extends Vue {
             notes: this.notes,
             subTasks: JSON.parse(JSON.stringify(this.subTasks)),
             subTaskId: this.subTaskId,
+            tags: this.tags,
         };
     }
 
