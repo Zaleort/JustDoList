@@ -110,16 +110,17 @@ export default class Task extends Vue {
     }
 
     get tagsTooltip(): string {
-        const tags = this.$store.state.tag.tags.map((t: ITag) => {
+        let tags = this.$store.state.tag.tags.filter((t: ITag) => {
             for (const id of this.tags) {
                 if (t.id === id) {
-                    return t.name;
+                    return true;
                 }
             }
 
-            return;
+            return false;
         });
 
+        tags = tags.map((t: ITag) => t.name);
         return tags.join(', ');
     }
 

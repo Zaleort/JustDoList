@@ -22,7 +22,7 @@ export default {
             notes: '',
             subTasks: [],
             subTaskId: 0,
-            tags: [ '0', '2' ],
+            tags: [],
         } as ITaskPending,
     },
 

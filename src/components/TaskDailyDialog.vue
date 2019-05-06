@@ -48,6 +48,22 @@
                 </div>
             </div>
 
+            <div class="dialog-form-group">
+                <p class="dialog-form-name">Etiquetas</p>
+                <div class="dialog-form-group">
+                    <search-select :items="selectTags"
+                        :placeholder="'Añadir etiquetas'"
+                        :noResults="'Sin resultados, se creará una etiqueta nueva'"
+                        @selected="addTag" 
+                        @created="addNewTag"/>
+                </div>
+                <div>
+                    <div v-for="tag of currentTagCloud" v-bind:key="tag.id">
+                        <span>{{ tag.name }}</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="dialog-footer">
                 <input type="hidden" ref="taskId" :value="currentTask.id">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
@@ -60,9 +76,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
+import SearchSelect from './SearchSelect.vue';
 
 @Component({
-    components: { ModalDialog },
+    components: { ModalDialog, SearchSelect },
 })
 
 export default class TaskDailyDialog extends Vue {
@@ -80,6 +97,32 @@ export default class TaskDailyDialog extends Vue {
 
     get currentSubTaskIdCounter() {
         return this.$store.state.daily.current.subTaskId;
+    }
+
+    get currentTags() {
+         return this.$store.state.daily.current.tags;
+    }
+
+    get currentTagCloud() {
+        const ids = this.$store.state.daily.current.tags;
+        const tags = this.$store.state.tag.tags.filter((t: ITag) => {
+            for (const id of ids) {
+                if (id === t.id) {
+                    return true;
+                }
+
+                continue;
+            }
+
+            return false;
+        });
+
+        return tags;
+    }
+
+    get selectTags() {
+        const all = this.$store.state.tag.tags.slice();
+        return all;
     }
 
     private addSubTask(): void {
@@ -110,6 +153,24 @@ export default class TaskDailyDialog extends Vue {
         this.$store.dispatch('daily/updateCurrentSubTaskName', { id, name });
     }
 
+    private addTag(id: string): void {
+        this.$store.dispatch('daily/addCurrentTag', id);
+    }
+
+    private addNewTag(name: string): void {
+        this.$store.commit('tag/INCREASE_ID_COUNTER');
+        const tagId = this.$store.state.tag.idCounter;
+
+        const newTag = {
+            id: tagId,
+            name,
+            color: '#7400C9',
+        } as ITag;
+
+        this.$store.dispatch('tag/addTag', newTag);
+        this.$store.dispatch('daily/addCurrentTag', tagId);
+    }
+
     private processTask(): void {
         const taskId = (this.$refs.taskId as HTMLInputElement).value;
         const taskName = (this.$refs.taskName as HTMLInputElement).value;
@@ -119,6 +180,7 @@ export default class TaskDailyDialog extends Vue {
         const taskNotes = (this.$refs.taskNotes as HTMLInputElement).value;
         const subTasks = this.currentSubTasks;
         const lastSubTask = (this.$refs.taskSubTask as HTMLInputElement).value;
+        const tags = this.currentTags;
 
         if (lastSubTask) {
             this.$store.commit('pending/INCREASE_CURRENT_SUBTASK_COUNTER');
@@ -137,6 +199,7 @@ export default class TaskDailyDialog extends Vue {
             notes: taskNotes,
             subTasks,
             subTaskId: this.currentSubTaskIdCounter,
+            tags,
         };
 
         if (!task.id) {
@@ -173,7 +236,15 @@ export default class TaskDailyDialog extends Vue {
 
     private closeDialog(): void {
         this.$emit('close');
-        this.$store.dispatch('daily/updateCurrent', { id: '', name: '', notes: '', subTasks: [], subTaskId: 0 });
+        this.$store.dispatch('daily/updateCurrent',
+            {
+                id: '',
+                name: '',
+                notes: '',
+                subTasks: [],
+                subTaskId: 0,
+                tags: [],
+            });
         this.resetDialog();
     }
 
