@@ -56,29 +56,11 @@
                 <div class="dialog-form-group">
                     <p class="dialog-form-name">Etiquetas</p>
                     <div class="dialog-form-group">
-                        <div class="relative">
-                            <span class="text-input-icon left">
-                                <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                    <path fill="#4caf50" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
-                                </svg>
-                            </span>
-                            <input
-                                @focus="openTagList = true"
-                                ref="taskAddTag"
-                                class="text-input left-icon full-width" 
-                                type="text"
-                                placeholder="Añadir etiqueta">
-                            <div v-show="openTagList" class="task-add-tag-container">
-                                <ul class="task-add-tag-list">
-                                    <li @click.prevent="addTag(tag.id)"
-                                        @blur="openTagList = false"
-                                        v-for="tag of selectTags" 
-                                        :key="tag.id">
-                                        {{ tag.name }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <search-select :items="selectTags"
+                            :placeholder="'Añadir etiquetas'"
+                            :noResults="'Sin resultados, se creará una etiqueta nueva'"
+                            @selected="addTag" 
+                            @created="addNewTag"/>
                     </div>
                     <div>
                         <div v-for="tag of currentTagCloud" v-bind:key="tag.id">
@@ -99,17 +81,16 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
+import SearchSelect from './SearchSelect.vue';
 
 @Component({
-     components: { ModalDialog },
+     components: { ModalDialog, SearchSelect },
 })
 
 export default class TaskPendingDialog extends Vue {
     @Prop() private show!: boolean;
     @Prop() private heading!: string;
     @Prop() private submitText!: string;
-
-    private openTagList = false;
 
     get currentTask() {
         return this.$store.state.pending.current;
@@ -172,14 +153,27 @@ export default class TaskPendingDialog extends Vue {
         this.$store.dispatch('pending/deleteCurrentSubTask', id);
     }
 
-    private updateSubTaskName(id: string, event: any) {
+    private updateSubTaskName(id: string, event: any): void {
         const name = event.target.value;
         this.$store.dispatch('pending/updateCurrentSubTaskName', { id, name });
     }
 
-    private addTag(id: string) {
-        this.openTagList = false;
+    private addTag(id: string): void {
         this.$store.dispatch('pending/addCurrentTag', id);
+    }
+
+    private addNewTag(name: string): void {
+        this.$store.commit('tag/INCREASE_ID_COUNTER');
+        const tagId = this.$store.state.tag.idCounter;
+
+        const newTag = {
+            id: tagId,
+            name,
+            color: '#7400C9',
+        } as ITag;
+
+        this.$store.dispatch('tag/addTag', newTag);
+        this.$store.dispatch('pending/addCurrentTag', tagId);
     }
 
     private processTask(): void {
@@ -269,41 +263,3 @@ export default class TaskPendingDialog extends Vue {
     }
 }
 </script>
-
-<style lang="scss">
-    @import '../scss/variables';
-
-    .task-add-tag-container {
-        position: absolute;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-        left: 0;
-        width: 100%;
-        overflow: auto;
-        max-height: 125px;
-        z-index: 9999;
-    }
-
-    .task-add-tag-list {
-        background-color: #fff;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        list-style-type: none;
-
-        li {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            font-style: normal;
-            font-size: 0.9em;
-            padding: 8px 12px;
-            transition: all 0.15s;
-        }
-
-        li:hover {
-        cursor: pointer;
-        background-color: $grey100;
-    }
-    }
-</style>
-
