@@ -27,13 +27,16 @@
         <div ref="subTasks" class="task-subtasks-list" v-if="hasSubTasks">
             <SubTask v-for="subTask in subTasks" :key="subTask.id" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
-        <div class="task-card-footer">
+        <div class="relative task-card-footer">
             <span v-if="dateDeadline">
                 Finaliza el {{ dateDeadline }}
             </span>
-            <span v-if="tags && tags.length > 0" class="task-tags-icon">
-                Tiene etiquetas
-            </span>
+            <div v-if="tags && tags.length > 0" class="task-tags-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"></path>
+                </svg>
+            </div>
+            <div class="tooltip">{{ tagsTooltip }}</div>
         </div>
     </div>
 </template>
@@ -106,6 +109,20 @@ export default class Task extends Vue {
         return this.subTasks && this.subTasks.length > 0;
     }
 
+    get tagsTooltip(): string {
+        const tags = this.$store.state.tag.tags.map((t: ITag) => {
+            for (const id of this.tags) {
+                if (t.id === id) {
+                    return t.name;
+                }
+            }
+
+            return;
+        });
+
+        return tags.join(', ');
+    }
+
     private getTaskObject(): ITaskPending | ITaskDaily {
         // Se intenta evitar pasar referencias, de modo que no afecte directamente a state.task
         // causando comportamientos inesperados
@@ -116,7 +133,7 @@ export default class Task extends Vue {
             notes: this.notes,
             subTasks: JSON.parse(JSON.stringify(this.subTasks)),
             subTaskId: this.subTaskId,
-            tags: this.tags,
+            tags: this.tags.slice(),
         };
     }
 
@@ -302,5 +319,42 @@ export default class Task extends Vue {
 
     .checkbox:checked ~ .checkbox-title {
         color: $grey400;
+    }
+
+    .task-card-footer {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-top: 12px;
+    }
+
+    .task-tags-icon {
+        fill: $grey400;
+        margin-right: 9px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .task-tags-icon:hover {
+        fill: $grey600;
+    }
+
+    .task-tags-icon:hover ~ .tooltip {
+        visibility: visible;
+    }
+
+    .tooltip {
+        visibility: hidden;
+        position: absolute;
+        right: 0;
+        top: 21px;
+        max-width: 225px;
+        line-break: loose;
+        word-wrap: break-word;
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        font-size: 0.8em;
+        padding: 9px 16px;
+        border-radius: 5px;
+        line-height: 1.33;
     }
 </style>

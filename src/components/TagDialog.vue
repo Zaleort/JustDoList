@@ -37,8 +37,7 @@
                 </transition-group>
             </div>
             <div class="dialog-footer" :key="'footer'">
-                <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
-                <input ref="tagSubmit" class="save-button button button-success" type="submit" value="Guardar">
+                <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cerrar">
             </div>
         </transition-group>
     </modal-dialog>
