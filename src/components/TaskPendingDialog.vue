@@ -63,9 +63,17 @@
                             @created="addNewTag"/>
                     </div>
                     <div>
-                        <div v-for="tag of currentTagCloud" v-bind:key="tag.id">
-                            <span>{{ tag.name }}</span>
-                        </div>
+                        <transition-group
+                            tag="div"
+                            class="tag-cloud"
+                            enter-active-class="animate faster fade-in-up-slight"
+                            move-class="move">
+                                <tag v-for="tag in currentTagCloud" 
+                                    :key="tag.id" 
+                                    v-bind="tag" 
+                                    :isModal="true"
+                                    :type="'pending'"/>
+                        </transition-group>
                     </div>
                 </div>
 
@@ -82,9 +90,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
 import SearchSelect from './SearchSelect.vue';
+import Tag from './Tag.vue';
 
 @Component({
-     components: { ModalDialog, SearchSelect },
+     components: { ModalDialog, SearchSelect, Tag },
 })
 
 export default class TaskPendingDialog extends Vue {

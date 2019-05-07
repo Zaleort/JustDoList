@@ -135,6 +135,16 @@ export default {
             }
         },
 
+        DELETE_CURRENT_TAG(state: any, tagId: string) {
+            const i = state.current.tags.findIndex((t: string) => {
+                return t === tagId;
+            });
+
+            if (i >= 0) {
+                state.current.tags.splice(i, 1);
+            }
+        },
+
         // Tags
         ADD_TAG(state: any, args: any) {
             const {tag, id} = args;
@@ -209,6 +219,10 @@ export default {
         // Tags of Current Task
         addCurrentTag: (context: any, tagId: string) => {
             context.commit('ADD_CURRENT_TAG', tagId);
+        },
+
+        deleteCurrentTag: (context: any, tagId: string) => {
+            context.commit('DELETE_CURRENT_TAG', tagId);
         },
 
         // Tags

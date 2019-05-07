@@ -1,7 +1,14 @@
 <template>
-    <div class="card tag-card" ref="tag">
+    <div class="card tag-card" :class="{ 'tag-card-focus': onFocus }" ref="tag">
         <div class="card-header">
-            <input ref="tagName" @blur="updateName" class="tag-name" type="text" :value="name">
+            <span v-if="isModal"></span>
+            <input ref="tagName" 
+                @focus="onFocus = true"
+                @blur="updateName; onFocus = false" 
+                @keydown.enter="updateName" 
+                class="tag-name" 
+                type="text" 
+                :value="name">
             <span class="tag-select-color-icon">
                 <svg @click="showOptionsMenu = !showOptionsMenu" class="icon" width="24" height="24" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 0h24v24H0z" fill="none"/>
@@ -30,9 +37,12 @@ import ContextMenu from './ContextMenu.vue';
 export default class Tag extends Vue {
     @Prop() private id!: string;
     @Prop() private name!: string;
-    @Prop() private color!: string;
+    @Prop({ default: '#7400C9' }) private color!: string;
+    @Prop({ default: false }) private isModal!: boolean;
+    @Prop({ default: null }) private type!: string;
 
     private showOptionsMenu: boolean = false;
+    private onFocus: boolean = false;
     private options: object[] = [
         {
             name: 'Editar',
@@ -70,6 +80,11 @@ export default class Tag extends Vue {
     }
 
     private deleteTag() {
+        if (this.isModal) {
+            this.$store.dispatch(this.type + '/deleteCurrentTag', this.id);
+            return;
+        }
+
         this.$store.dispatch('tag/deleteTag', this.id);
     }
 
@@ -99,11 +114,22 @@ export default class Tag extends Vue {
         width: 100%;
     }
 
+    .tag-name:focus {
+        outline: none;
+    }
+
     .tag-card {
-        border-left-width: 5px;
+        border-width: 1px 1px 1px 5px;
+        border-top-color: white;
+        border-right-color:white;
+        border-bottom-color:white;
         margin-left: 7px;
         margin-right: 7px;
         padding: 7px 12px;
+    }
+
+    .tag-card-focus {
+        border-color: $primary;
     }
 
     .tag-select-color-icon {
