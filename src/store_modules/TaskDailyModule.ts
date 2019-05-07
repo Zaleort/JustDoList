@@ -146,6 +146,19 @@ export default {
                 state.tasks[i].tags.push(tag);
             }
         },
+
+        // Borra las etiquetas que ya no existan en el módulo tag
+        CLEAN_TAGS(state: any, id: string) {
+            for (const t of state.tasks) {
+                const i = t.tags.findIndex((tag: string) => {
+                    return tag === id;
+                });
+
+                if (i >= 0) {
+                    t.tags.splice(i, 1);
+                }
+            }
+        },
     },
 
     actions: {

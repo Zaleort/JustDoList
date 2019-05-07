@@ -152,6 +152,22 @@ export default {
                 state.tasks[i].tags.push(tag);
             }
         },
+
+        CLEAN_TAGS(state: any, id: string) {
+            if (!state.tasks || state.tasks.length <= 0) {
+                return;
+            }
+
+            for (const t of state.tasks) {
+                const i = t.tags.findIndex((tag: string) => {
+                    return tag === id;
+                });
+
+                if (i >= 0) {
+                    t.tags.splice(i, 1);
+                }
+            }
+        },
     },
 
     actions: {

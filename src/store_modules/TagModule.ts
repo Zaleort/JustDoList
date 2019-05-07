@@ -63,6 +63,8 @@ export default {
 
         deleteTag: (context: any, id: string) => {
             context.commit('DELETE_TAG', id);
+            context.commit('pending/CLEAN_TAGS', id, { root: true });
+            context.commit('daily/CLEAN_TAGS', id, { root: true });
         },
     },
 };

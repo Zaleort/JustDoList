@@ -351,7 +351,8 @@ export default class Task extends Vue {
         max-width: 225px;
         line-break: loose;
         word-wrap: break-word;
-        background-color: rgba(0, 0, 0, 0.85);
+        background-color: rgba(0, 0, 0, 0.8);
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
         color: white;
         font-size: 0.8em;
         padding: 9px 16px;
