@@ -51,11 +51,18 @@
     margin-bottom: 3em; 
 }
 
+// Width
+.full-width { width: 100%; }
+.w25 { width: 25%; }
+.w33 { width: 33%; }
+.w50 { width: 50%; }
+.w66 { width: 66%; }
+.w75 { width: 75%; }
+
 // Position
 
 .relative { position: relative; }
 .absolute { position: absolute; }
-.full-width { width: 100%; }
 
 // Font color
 

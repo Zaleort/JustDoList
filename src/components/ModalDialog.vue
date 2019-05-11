@@ -87,6 +87,20 @@ export default class ModalDialog extends Vue {
     margin-bottom: 12px;
 }
 
+.dialog-form-daily-select-group {
+    display: flex;
+    flex-direction: column;
+
+    input {
+        width: 100%;
+        margin-bottom: 7px;
+    }
+
+    select {
+        width: 100%;
+    }
+}
+
 .dialog-form-name {
     user-select: none;
     font-family: $montserrat;
@@ -149,6 +163,19 @@ export default class ModalDialog extends Vue {
 @media only screen and (min-width: $tablet) {
     .dialog-content {
         width: $mobile-l;
+    }
+
+    .dialog-form-daily-select-group {
+        flex-direction: row;
+
+        input {
+            width: 66%;
+            margin-bottom: 0;
+        }
+
+        select {
+            width: 33%;
+        }
     }
 }
 

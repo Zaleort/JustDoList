@@ -97,6 +97,21 @@ export default {
         },
 
         // Current Task
+        SET_CURRENT_ID(state: any) {
+            state.current.id = state.idCounter;
+        },
+
+        RESET_CURRENT_TASK(state: any) {
+            state.current = {
+                id: '',
+                name: '',
+                notes: '',
+                subTasks: [],
+                subTaskId: 0,
+                tags: [],
+            } as ITaskPending;
+        },
+
         UPDATE_CURRENT_TASK(state: any, task: ITaskPending) {
             state.current = task;
         },

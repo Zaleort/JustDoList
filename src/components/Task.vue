@@ -57,6 +57,8 @@ export default class Task extends Vue {
     @Prop() private subTasks!: ISubTask[];
     @Prop({ default: 0 }) private subTaskId!: number;
     @Prop() private tags!: string[];
+    @Prop({ default: 'd1' }) private frecuency!: string;
+    @Prop({ default: 0 }) private streak!: number;
     @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
@@ -135,6 +137,7 @@ export default class Task extends Vue {
             subTasks: JSON.parse(JSON.stringify(this.subTasks)),
             subTaskId: this.subTaskId,
             tags: this.tags.slice(),
+            frecuency: this.frecuency,
         };
     }
 

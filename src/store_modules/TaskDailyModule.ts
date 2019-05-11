@@ -20,6 +20,8 @@ export default {
             subTasks: [],
             subTaskId: 0,
             tags: [],
+            frecuency: 'd1',
+            streak: 0,
         } as ITaskDaily,
     },
 
@@ -92,8 +94,35 @@ export default {
             }
         },
 
+        SET_CURRENT_ID(state: any) {
+            state.current.id = state.idCounter;
+        },
+
+        RESET_CURRENT_TASK(state: any) {
+            state.current = {
+                id: '',
+                name: '',
+                notes: '',
+                subTasks: [],
+                subTaskId: 0,
+                tags: [],
+                frecuency: 'd1',
+                streak: 0,
+            } as ITaskDaily;
+        },
+
         UPDATE_CURRENT_TASK(state: any, task: ITaskDaily) {
             state.current = task;
+        },
+
+        SET_CURRENT_FRECUENCY_NUMBER(state: any, fNumber: string) {
+            const type = state.current.frecuency.charAt(0);
+            state.current.frecuency = type + fNumber;
+        },
+
+        SET_CURRENT_FRECUENCY_TYPE({ current }: any, type: string) {
+            const fNumber = current.frecuency.substring(1, current.frecuency.length);
+            current.frecuency = type + fNumber;
         },
 
         INCREASE_CURRENT_SUBTASK_COUNTER(state: any) {

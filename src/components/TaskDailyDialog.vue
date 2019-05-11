@@ -10,19 +10,19 @@
                     @keydown.enter="submit"
                     ref="taskName" 
                     class="text-input"
-                    v-model="currentTask.name"
+                    v-model="current.name"
                     placeholder="Limpiar los platos" 
                     type="text">
             </label>
 
             <label class="dialog-form-group">
                 <p class="dialog-form-name">Notas</p>
-                <textarea ref="taskNotes" class="dialog-form-textarea text-input" rows="4" v-model="currentTask.notes"></textarea>
+                <textarea ref="taskNotes" class="dialog-form-textarea text-input" rows="4" v-model="current.notes"></textarea>
             </label>
 
             <div class="dialog-form-group">
                 <p class="dialog-form-name">Subtareas</p>
-                <div class="relative subtask-group" v-for="subTask of currentSubTasks" :key="subTask.id">
+                <div class="relative subtask-group" v-for="subTask of current.subTasks" :key="subTask.id">
                     <span @click="deleteSubTask(subTask.id)" class="delete-subtask-icon">
                         <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                             <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
@@ -48,6 +48,23 @@
                 </div>
             </div>
 
+            <label class="dialog-form-group">
+                <p class="dialog-form-name">Repetir cada</p>
+                <div class="dialog-form-daily-select-group">
+                    <input @blur="validateFrecuency"
+                        v-model="frecuencyNumber"
+                        class="text-input" 
+                        type="number" min="1" 
+                        ref="frecuencyNumber">
+                    <select v-model="frecuencyType" class="text-input" ref="frecuency">
+                        <option value="d">Días</option>
+                        <option value="w">Semanas</option>
+                        <option value="m">Meses</option>
+                        <option value="y">Años</option>
+                    </select>
+                </div>
+            </label>
+
             <div class="dialog-form-group">
                 <p class="dialog-form-name">Etiquetas</p>
                 <div class="dialog-form-group">
@@ -63,7 +80,7 @@
                         class="tag-cloud"
                         enter-active-class="animate faster fade-in-up-slight"
                         move-class="move">
-                            <tag v-for="tag in currentTagCloud" 
+                            <tag v-for="tag in tagCloud" 
                                 :key="tag.id" 
                                 v-bind="tag"
                                 :isModal="true"
@@ -73,7 +90,7 @@
             </div>
 
             <div class="dialog-footer">
-                <input type="hidden" ref="taskId" :value="currentTask.id">
+                <input type="hidden" ref="taskId" v-model="current.id">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
                 <input @click="processTask" ref="taskSubmit" class="save-button button button-success" type="submit" :value="submitText">
             </div>
@@ -96,24 +113,30 @@ export default class TaskDailyDialog extends Vue {
     @Prop() private heading!: string;
     @Prop() private submitText!: string;
 
-    get currentTask() {
+    get current() {
         return this.$store.state.daily.current;
     }
 
-    get currentSubTasks() {
-        return this.$store.state.daily.current.subTasks;
+    set frecuencyNumber(fNumber: number) {
+        this.$store.commit('daily/SET_CURRENT_FRECUENCY_NUMBER', fNumber);
     }
 
-    get currentSubTaskIdCounter() {
-        return this.$store.state.daily.current.subTaskId;
+    get frecuencyNumber() {
+        const current = this.$store.state.daily.current.frecuency;
+        return current.substring(1, current.length);
     }
 
-    get currentTags() {
-         return this.$store.state.daily.current.tags;
+    set frecuencyType(type: string) {
+        this.$store.commit('daily/SET_CURRENT_FRECUENCY_TYPE', type);
     }
 
-    get currentTagCloud() {
-        const ids = this.$store.state.daily.current.tags;
+    get frecuencyType() {
+        const current = this.$store.state.daily.current.frecuency;
+        return current.charAt(0);
+    }
+
+    get tagCloud() {
+        const ids = this.current.tags;
         const tags = this.$store.state.tag.tags.filter((t: ITag) => {
             for (const id of ids) {
                 if (id === t.id) {
@@ -138,7 +161,7 @@ export default class TaskDailyDialog extends Vue {
         let task: ISubTask;
 
         this.$store.commit('daily/INCREASE_CURRENT_SUBTASK_COUNTER');
-        const taskId = this.currentSubTaskIdCounter;
+        const taskId = this.current.subTaskId;
         const taskName = (this.$refs.taskSubTask as HTMLInputElement).value;
 
         if (!taskName || taskName.trim().length === 0) { return; }
@@ -181,20 +204,15 @@ export default class TaskDailyDialog extends Vue {
     }
 
     private processTask(): void {
-        const taskId = (this.$refs.taskId as HTMLInputElement).value;
-        const taskName = (this.$refs.taskName as HTMLInputElement).value;
-
         if (!this.validateTaskName()) { return; }
+        if (!this.validateFrecuency()) { return; }
 
-        const taskNotes = (this.$refs.taskNotes as HTMLInputElement).value;
-        const subTasks = this.currentSubTasks;
         const lastSubTask = (this.$refs.taskSubTask as HTMLInputElement).value;
-        const tags = this.currentTags;
 
         if (lastSubTask) {
             this.$store.commit('daily/INCREASE_CURRENT_SUBTASK_COUNTER');
             const subTask = {
-                id: this.currentSubTaskIdCounter,
+                id: this.current.subTaskId,
                 name: lastSubTask,
                 checked: false,
             };
@@ -202,23 +220,14 @@ export default class TaskDailyDialog extends Vue {
             this.$store.dispatch('daily/addCurrentSubTask', subTask);
         }
 
-        const task: ITaskDaily = {
-            id: taskId,
-            name: taskName,
-            notes: taskNotes,
-            subTasks,
-            subTaskId: this.currentSubTaskIdCounter,
-            tags,
-        };
-
-        if (!task.id) {
+        if (!this.current.id || this.current.id.length <= 0) {
             // Generar y asignar ID
             // Añadir tarea
             this.$store.commit('daily/INCREASE_ID_COUNTER');
-            task.id = this.$store.state.daily.idCounter;
-            this.$store.dispatch('daily/addTask', task);
+            this.$store.commit('daily/SET_CURRENT_ID');
+            this.$store.dispatch('daily/addTask', this.current);
         } else {
-            this.$store.dispatch('daily/updateTask', task);
+            this.$store.dispatch('daily/updateTask', this.current);
         }
 
         this.closeDialog();
@@ -236,6 +245,18 @@ export default class TaskDailyDialog extends Vue {
         return true;
     }
 
+    private validateFrecuency(): boolean {
+        const frecuency = this.$refs.frecuencyNumber as HTMLInputElement;
+
+        if (!frecuency.value || frecuency.value.trim().length === 0 || parseInt(frecuency.value, 10) < 0) {
+            frecuency.classList.add('input-error');
+            return false;
+        }
+
+        frecuency.classList.remove('input-error');
+        return true;
+    }
+
     // Evita que se muestre el outline de error, forzando el blur antes que
     // processTask
     private submit() {
@@ -245,15 +266,7 @@ export default class TaskDailyDialog extends Vue {
 
     private closeDialog(): void {
         this.$emit('close');
-        this.$store.dispatch('daily/updateCurrent',
-            {
-                id: '',
-                name: '',
-                notes: '',
-                subTasks: [],
-                subTaskId: 0,
-                tags: [],
-            });
+        this.$store.commit('daily/RESET_CURRENT_TASK');
         this.resetDialog();
     }
 
@@ -264,6 +277,11 @@ export default class TaskDailyDialog extends Vue {
         taskName.value = '';
         taskName.classList.remove('input-error');
 
+        const frecuencyNumber = (this.$refs.frecuencyNumber as HTMLInputElement);
+        frecuencyNumber.value = '1';
+        frecuencyNumber.classList.remove('input-error');
+
+        (this.$refs.frecuency as HTMLSelectElement).selectedIndex = 0;
         (this.$refs.taskNotes as HTMLInputElement).value = '';
         (this.$refs.taskSubTask as HTMLInputElement)!.value = '';
     }
