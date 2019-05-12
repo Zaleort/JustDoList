@@ -7,4 +7,5 @@ interface ITaskDaily {
     tags?: string[];
     frecuency?: string;
     streak?: number;
+    completed?: boolean;
 }

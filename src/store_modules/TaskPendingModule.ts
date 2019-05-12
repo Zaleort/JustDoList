@@ -112,8 +112,14 @@ export default {
             } as ITaskPending;
         },
 
-        UPDATE_CURRENT_TASK(state: any, task: ITaskPending) {
-            state.current = task;
+        UPDATE_CURRENT_TASK(state: any, id: string) {
+            const task = state.tasks.find((t: ITaskDaily) => {
+                return t.id === id;
+            });
+
+            if (task) {
+                state.current = task;
+            }
         },
 
         // Subtasks of Current Task
@@ -226,8 +232,8 @@ export default {
         },
 
         // Current Task
-        updateCurrent: (context: any, task: ITaskPending) => {
-            context.commit('UPDATE_CURRENT_TASK', task);
+        updateCurrent: (context: any, id: string) => {
+            context.commit('UPDATE_CURRENT_TASK', id);
         },
 
         // SubTasks of Current Task

@@ -11,13 +11,27 @@ describe('Task Pending Mutations', () => {
 
     it('Añade tareas', () => {
         const state = { tasks: [] };
-        mutations.ADD_TASK(state, { id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [] });
+        const task = {
+            id: '0',
+            name: 'Peter',
+            notes: '',
+            subTaskId: 0,
+            subTasks: [],
+            tags: [],
+            frecuency: 'd1',
+        };
+
+        mutations.ADD_TASK(state, task);
         expect(state.tasks.length).toBe(1);
     });
 
     it('Actualiza tareas', () => {
-        const state = { tasks: [{ id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [] }] };
-        mutations.UPDATE_TASK(state, { id: '0', name: 'Pato', notes: '', subTaskId: 0, subTasks: [], tags: [] });
+        const state = {
+            tasks: [{ id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [], frecuency: 'd1' }],
+        };
+
+        mutations.UPDATE_TASK(state,
+            { id: '0', name: 'Pato', notes: '', subTaskId: 0, subTasks: [], tags: [], frecuency: 'd1' });
         expect(state.tasks[0].name).toBe('Pato');
     });
 
@@ -89,9 +103,9 @@ describe('Task Pending Mutations', () => {
     });
 
     it('Actualiza la Tarea Actual', () => {
-        const state = { current: {} };
-        const task = { id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [] };
-        mutations.UPDATE_CURRENT_TASK(state, task);
+        const task = { id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [], frecuency: 'd1' };
+        const state = { tasks: [{}, task ], current: {} };
+        mutations.UPDATE_CURRENT_TASK(state, task.id);
         expect(state.current).toEqual(task);
     });
 

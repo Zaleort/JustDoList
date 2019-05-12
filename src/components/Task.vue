@@ -2,7 +2,7 @@
     <div class="card task-card" ref="task">
         <div class="card-header">
             <div class="checkbox-group">
-                <button @click="completeTask" class="checkbox-button checkbox-indicator"></button>
+                <button @click="completeTask" class="checkbox-button checkbox-indicator" :class="{ checked: completed }"></button>
                 <p @click="openEditTask" class="checkbox-title">{{ name }}</p>
             </div>
             <span @click="toggleSubTasks" v-if="hasSubTasks" class="icon expand-icon" ref="expandIcon">
@@ -57,13 +57,16 @@ export default class Task extends Vue {
     @Prop() private subTasks!: ISubTask[];
     @Prop({ default: 0 }) private subTaskId!: number;
     @Prop() private tags!: string[];
+
     @Prop({ default: 'd1' }) private frecuency!: string;
     @Prop({ default: 0 }) private streak!: number;
+
     @Prop() private dateCreated!: string;
     @Prop() private dateUpdated!: string;
     @Prop() private dateDeadline!: string;
     @Prop() private dateFinalized!: string;
 
+    @Prop({ default: false })private completed!: boolean;
     private showOptionsMenu: boolean = false;
 
     get options() {
@@ -126,31 +129,25 @@ export default class Task extends Vue {
         return tags.join(', ');
     }
 
-    private getTaskObject(): ITaskPending | ITaskDaily {
-        // Se intenta evitar pasar referencias, de modo que no afecte directamente a state.task
-        // causando comportamientos inesperados
-
-        return {
-            id: this.id,
-            name: this.name,
-            notes: this.notes,
-            subTasks: JSON.parse(JSON.stringify(this.subTasks)),
-            subTaskId: this.subTaskId,
-            tags: this.tags.slice(),
-            frecuency: this.frecuency,
-        };
-    }
-
     private completeTask(): void {
         // Mantiene el ancho del objeto al aplicar position: absolute para la animación de salida
-        const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
-        (this.$refs.task as HTMLElement).style.width = width + 'px';
+        if (this.type === 'pending') {
+            const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
+            (this.$refs.task as HTMLElement).style.width = width + 'px';
+        }
 
         this.$store.dispatch(this.type + '/completeTask', this.id);
     }
 
+    private deleteTask(): void {
+        const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
+        (this.$refs.task as HTMLElement).style.width = width + 'px';
+
+        this.$store.dispatch(this.type + '/deleteTask', this.id);
+    }
+
     private openEditTask(): void {
-        this.$store.dispatch(this.type + '/updateCurrent', this.getTaskObject());
+        this.$store.dispatch(this.type + '/updateCurrent', this.id);
         this.$emit('openDialog');
     }
 
@@ -171,7 +168,7 @@ export default class Task extends Vue {
                 this.moveTaskDown();
                 break;
             case 3:
-                this.completeTask();
+                this.deleteTask();
                 break;
         }
     }
@@ -269,7 +266,14 @@ export default class Task extends Vue {
         cursor: pointer;
         padding: 0;
         background-color: #fff;
+    }
 
+    .checkbox-button:focus {
+        outline: none;
+    }
+
+    .checkbox-button.checked {
+        border-color: $primary;
     }
 
     .checkbox-indicator, .checkbox-indicator--sm {
@@ -317,7 +321,8 @@ export default class Task extends Vue {
         border-color: $primary;
     } 
 
-    .checkbox:checked ~ .checkbox-indicator::after, .checkbox:checked ~ .checkbox-indicator--sm::after {
+    .checkbox:checked ~ .checkbox-indicator::after, .checkbox:checked ~ .checkbox-indicator--sm::after, 
+    .checked.checkbox-indicator::after, .checked.checkbox-indicator--sm::after {
         opacity: 1;
     }
 

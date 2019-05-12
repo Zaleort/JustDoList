@@ -22,6 +22,7 @@ export default {
             tags: [],
             frecuency: 'd1',
             streak: 0,
+            completed: false,
         } as ITaskDaily,
     },
 
@@ -46,12 +47,27 @@ export default {
             }
         },
 
-        COMPLETE_TASK(state: any, id: string) {
+        DELETE_TASK(state: any, id: string) {
             const i = state.tasks.findIndex((e: ITaskDaily) => {
                 return e.id === id;
             });
 
             state.tasks.splice(i, 1);
+        },
+
+        COMPLETE_TASK(state: any, id: string) {
+            const task = state.tasks.find((e: ITaskDaily) => {
+                return e.id === id;
+            });
+
+            if (!task) { return; }
+            if (task.completed) {
+                task.completed = false;
+                task.streak--;
+            } else {
+                task.completed = true;
+                task.streak++;
+            }
         },
 
         MOVE_TASK_UP(state: any, id: string) {
@@ -108,11 +124,18 @@ export default {
                 tags: [],
                 frecuency: 'd1',
                 streak: 0,
+                completed: false,
             } as ITaskDaily;
         },
 
-        UPDATE_CURRENT_TASK(state: any, task: ITaskDaily) {
-            state.current = task;
+        UPDATE_CURRENT_TASK(state: any, id: string) {
+            const task = state.tasks.find((t: ITaskDaily) => {
+                return t.id === id;
+            });
+
+            if (task) {
+                state.current = task;
+            }
         },
 
         SET_CURRENT_FRECUENCY_NUMBER(state: any, fNumber: string) {
@@ -213,6 +236,10 @@ export default {
             context.commit('UPDATE_TASK', task);
         },
 
+        deleteTask: (context: any, id: string) => {
+            context.commit('DELETE_TASK', id);
+        },
+
         completeTask: (context: any, id: string) => {
             context.commit('COMPLETE_TASK', id);
         },
@@ -229,8 +256,8 @@ export default {
             context.commit('UPDATE_SUBTASK_CHECK', payload);
         },
 
-        updateCurrent: (context: any, task: ITaskDaily) => {
-            context.commit('UPDATE_CURRENT_TASK', task);
+        updateCurrent: (context: any, id: string) => {
+            context.commit('UPDATE_CURRENT_TASK', id);
         },
 
         addCurrentSubTask: (context: any, task: ISubTask) => {

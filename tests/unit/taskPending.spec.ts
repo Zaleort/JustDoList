@@ -89,9 +89,9 @@ describe('Task Pending Mutations', () => {
     });
 
     it('Actualiza la Tarea Actual', () => {
-        const state = { current: {} };
         const task = { id: '0', name: 'Peter', notes: '', subTaskId: 0, subTasks: [], tags: [] };
-        mutations.UPDATE_CURRENT_TASK(state, task);
+        const state = { tasks: [task], current: {} };
+        mutations.UPDATE_CURRENT_TASK(state, task.id);
         expect(state.current).toEqual(task);
     });
 
