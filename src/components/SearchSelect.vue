@@ -34,7 +34,7 @@ export default class SearchSelect extends Vue {
     @Prop() private placeholder!: string;
     @Prop({ default: 'Sin resultados' }) private noResults!: string;
 
-    private filteredItems = this.items;
+    private filteredItems = this.items || [];
     private openDropdown = false;
 
     private mounted() {

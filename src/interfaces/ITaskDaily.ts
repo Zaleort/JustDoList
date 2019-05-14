@@ -8,4 +8,8 @@ interface ITaskDaily {
     frecuency?: string;
     streak?: number;
     completed?: boolean;
+    dateCreated?: Date | null;
+    dateUpdated?: Date | null;
+    dateCompleted?: Date | null;
+    dateLastCompleted?: Date | null;
 }

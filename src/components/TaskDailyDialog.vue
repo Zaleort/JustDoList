@@ -136,6 +136,8 @@ export default class TaskDailyDialog extends Vue {
     }
 
     get tagCloud() {
+        if (!this.$store.state.tag) { return; }
+
         const ids = this.current.tags;
         const tags = this.$store.state.tag.tags.filter((t: ITag) => {
             for (const id of ids) {
@@ -153,6 +155,8 @@ export default class TaskDailyDialog extends Vue {
     }
 
     get selectTags() {
+        if (!this.$store) { return; }
+
         const all = this.$store.state.tag.tags.slice();
         return all;
     }

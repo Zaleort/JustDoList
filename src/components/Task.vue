@@ -31,12 +31,19 @@
             <span v-if="dateDeadline">
                 Finaliza el {{ dateDeadline }}
             </span>
+            <div v-if="streak >= 0" class="task-streak-icon">
+                <span>{{ streak }}</span>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"></path>
+                </svg>
+            </div>
+            <div class="tooltip">Racha</div>
             <div v-if="tags && tags.length > 0" class="task-tags-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
                     <path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"></path>
                 </svg>
             </div>
-            <div class="tooltip">{{ tagsTooltip }}</div>
+            <div class="tooltip">{{ 'Etiquetas: ' + tagsTooltip }}</div>
         </div>
     </div>
 </template>
@@ -58,13 +65,14 @@ export default class Task extends Vue {
     @Prop({ default: 0 }) private subTaskId!: number;
     @Prop() private tags!: string[];
 
-    @Prop({ default: 'd1' }) private frecuency!: string;
-    @Prop({ default: 0 }) private streak!: number;
+    @Prop() private frecuency!: string;
+    @Prop() private streak!: number;
 
-    @Prop() private dateCreated!: string;
-    @Prop() private dateUpdated!: string;
-    @Prop() private dateDeadline!: string;
-    @Prop() private dateFinalized!: string;
+    @Prop() private dateCreated!: Date;
+    @Prop() private dateUpdated!: Date;
+    @Prop() private dateCompleted!: Date;
+    @Prop() private dateLastCompleted!: Date;
+    @Prop() private dateDeadline!: Date;
 
     @Prop({ default: false })private completed!: boolean;
     private showOptionsMenu: boolean = false;
@@ -79,27 +87,27 @@ export default class Task extends Vue {
         }
 
         return [
-        {
-            name: 'Editar',
-            src: require('../assets/pen-solid.svg'),
-            disabled: false,
-        },
-        {
-            name: 'Mover arriba',
-            src: require('../assets/arrow-up-solid.svg'),
-            disabled: isDisabled,
-        },
-        {
-            name: 'Mover abajo',
-            src: require('../assets/arrow-down-solid.svg'),
-            disabled: isDisabled,
-        },
-        {
-            name: 'Borrar',
-            src: require('../assets/trash-solid.svg'),
-            disabled: false,
-        },
-    ];
+            {
+                name: 'Editar',
+                src: require('../assets/pen-solid.svg'),
+                disabled: false,
+            },
+            {
+                name: 'Mover arriba',
+                src: require('../assets/arrow-up-solid.svg'),
+                disabled: isDisabled,
+            },
+            {
+                name: 'Mover abajo',
+                src: require('../assets/arrow-down-solid.svg'),
+                disabled: isDisabled,
+            },
+            {
+                name: 'Borrar',
+                src: require('../assets/trash-solid.svg'),
+                disabled: false,
+            },
+        ];
     }
 
     get hasNotes(): boolean {
@@ -115,6 +123,8 @@ export default class Task extends Vue {
     }
 
     get tagsTooltip(): string {
+        if (!this.$store) { return ''; }
+
         let tags = this.$store.state.tag.tags.filter((t: ITag) => {
             for (const id of this.tags) {
                 if (t.id === id) {
@@ -127,6 +137,10 @@ export default class Task extends Vue {
 
         tags = tags.map((t: ITag) => t.name);
         return tags.join(', ');
+    }
+
+    private mounted(): void {
+        this.refreshTask();
     }
 
     private completeTask(): void {
@@ -144,6 +158,80 @@ export default class Task extends Vue {
         (this.$refs.task as HTMLElement).style.width = width + 'px';
 
         this.$store.dispatch(this.type + '/deleteTask', this.id);
+    }
+
+    private refreshTask(): void {
+        if (this.type !== 'daily') { return; }
+        if (!this.dateCompleted || this.dateCompleted === null) { return; }
+
+        const frecuency = this.frecuency.charAt(0);
+        const fNumber = parseInt(this.frecuency.substring(1, this.frecuency.length), 10);
+
+        const today = new Date();
+        const created = new Date(this.dateCreated);
+        const completed = new Date(this.dateCompleted);
+        today.setHours(0, 0, 0, 0);
+        created.setHours(0, 0, 0, 0);
+        completed.setHours(0, 0, 0, 0);
+
+        const diffCreated = Math.floor(Math.abs((today.getTime() - created.getTime()) / 8.64e7));
+        const diffCompleted = Math.floor(Math.abs((today.getTime() - completed.getTime()) / 8.64e7));
+
+        if (this.shouldResetStreak(frecuency, fNumber, diffCompleted)) {
+            this.$store.dispatch('daily/resetStreak');
+        }
+
+        if (this.shouldRefreshTask(frecuency, fNumber, diffCreated, diffCompleted)) {
+            this.$store.dispatch('daily/refreshTask');
+        }
+    }
+
+    private shouldResetStreak(f: string, n: number, dif: number): boolean {
+        if (dif === 0) { return false; }
+        switch (f) {
+            case 'd': {
+                return dif >= n;
+            }
+
+            case 'w': {
+                return dif >= (n * 7);
+            }
+
+            default: {
+                return false;
+            }
+        }
+    }
+
+    private shouldRefreshTask(f: string, n: number, dif: number, difCompleted: number): boolean {
+        if (dif === 0 || difCompleted === 0) { return false; }
+        if (!this.completed) { return false; }
+
+        switch (f) {
+            case 'd': {
+                if (dif % n === 0 && difCompleted >= 1) {
+                    return true;
+                } else if (difCompleted >= n) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            case 'w': {
+                if (dif % (n * 7) === 0 && difCompleted >= 1) {
+                    return true;
+                } else if (difCompleted >= (n * 7)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            default: {
+                return false;
+            }
+        }
     }
 
     private openEditTask(): void {
@@ -336,6 +424,34 @@ export default class Task extends Vue {
         margin-top: 12px;
     }
 
+    .task-streak-icon {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+            fill: $grey400;
+            margin-right: 3px;
+            width: 14px;
+            height: 14px;
+        }
+
+        span {
+            color: $grey400;
+            margin-right: 9px;
+        }
+    }
+
+    .task-streak-icon:hover {
+        svg { fill: $grey600; }
+        span { color: $grey600; }
+    }
+
+    .task-streak-icon:hover + .tooltip {
+        visibility: visible;
+    }
+
     .task-tags-icon {
         fill: $grey400;
         margin-right: 9px;
@@ -347,7 +463,7 @@ export default class Task extends Vue {
         fill: $grey600;
     }
 
-    .task-tags-icon:hover ~ .tooltip {
+    .task-tags-icon:hover + .tooltip {
         visibility: visible;
     }
 

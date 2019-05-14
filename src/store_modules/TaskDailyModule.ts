@@ -23,6 +23,10 @@ export default {
             frecuency: 'd1',
             streak: 0,
             completed: false,
+            dateCreated: null,
+            dateUpdated: null,
+            dateCompleted: null,
+            dateLastCompleted: null,
         } as ITaskDaily,
     },
 
@@ -34,6 +38,7 @@ export default {
         },
 
         ADD_TASK(state: any, task: ITaskDaily) {
+            task.dateCreated = new Date();
             state.tasks.push(task);
         },
 
@@ -43,6 +48,7 @@ export default {
             });
 
             if (i >= 0) {
+                task.dateUpdated = new Date();
                 Vue.set(state.tasks, i, task);
             }
         },
@@ -61,12 +67,36 @@ export default {
             });
 
             if (!task) { return; }
+
             if (task.completed) {
+                task.dateCompleted = task.dateLastCompleted;
                 task.completed = false;
                 task.streak--;
             } else {
+                task.dateCompleted = new Date();
                 task.completed = true;
                 task.streak++;
+            }
+        },
+
+        RESET_STREAK(state: any, id: string) {
+            const task = state.tasks.find((t: ITaskDaily) => {
+                return t.id === id;
+            });
+
+            if (task) {
+                task.streak = 0;
+            }
+        },
+
+        REFRESH_TASK(state: any, id: string) {
+            const task = state.tasks.find((t: ITaskDaily) => {
+                return t.id === id;
+            });
+
+            if (task) {
+                task.completed = false;
+                task.dateLastCompleted = task.dateCompleted;
             }
         },
 
@@ -125,6 +155,10 @@ export default {
                 frecuency: 'd1',
                 streak: 0,
                 completed: false,
+                dateCreated: null,
+                dateUpdated: null,
+                dateCompleted: null,
+                dateLastCompleted: null,
             } as ITaskDaily;
         },
 
@@ -134,7 +168,7 @@ export default {
             });
 
             if (task) {
-                state.current = task;
+                state.current = Object.assign({}, task);
             }
         },
 
@@ -242,6 +276,14 @@ export default {
 
         completeTask: (context: any, id: string) => {
             context.commit('COMPLETE_TASK', id);
+        },
+
+        resetStreak: (context: any, id: string) => {
+            context.commit('RESET_STREAK', id);
+        },
+
+        refreshTask: (context: any, id: string) => {
+            context.commit('REFRESH_TASK', id);
         },
 
         moveTaskUp: (context: any, id: string) => {

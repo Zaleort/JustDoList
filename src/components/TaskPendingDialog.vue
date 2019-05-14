@@ -106,6 +106,8 @@ export default class TaskPendingDialog extends Vue {
     }
 
     get tagCloud() {
+        if (!this.$store.state.tag) { return; }
+
         const ids = this.$store.state.pending.current.tags;
         const tags = this.$store.state.tag.tags.filter((t: ITag) => {
             for (const id of ids) {
@@ -123,6 +125,8 @@ export default class TaskPendingDialog extends Vue {
     }
 
     get selectTags() {
+        if (!this.$store.state.tag) { return; }
+
         const all = this.$store.state.tag.tags.slice();
         return all;
     }

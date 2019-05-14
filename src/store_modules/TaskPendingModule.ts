@@ -118,7 +118,7 @@ export default {
             });
 
             if (task) {
-                state.current = task;
+                state.current = Object.assign({}, task);
             }
         },
 

@@ -22,6 +22,6 @@ module.exports = {
 
     pwa: {
       name: 'JustDoList',
-      themeColor: '#7400C9'
+      themeColor: '#5d00a2'
     }
 }
