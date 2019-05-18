@@ -1,5 +1,7 @@
 import '../interfaces/ITaskPending';
 import Vue from 'vue';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 /*
     Módulo de las Tareas Pendientes. Aquí se almacenará en un array las tareas disponibles
@@ -11,49 +13,41 @@ import Vue from 'vue';
 export default {
     namespaced: true,
     state: {
-        tasks: [] as ITaskPending[],
-        idCounter: '0',
+        tasks: {} as ITasksPending,
 
         // Al hacer click en editar tarea, se poblará este objeto para mostrar sus datos
         // correctamente en el formulario de edición
         current: {
-            id: '',
             name: '',
             notes: '',
-            subTasks: [],
+            subTasks: {},
             subTaskId: 0,
-            tags: [],
+            tags: {},
         } as ITaskPending,
+
+        currentId: '',
     },
 
     mutations: {
         // Tasks
-        INCREASE_ID_COUNTER(state: any) {
-            let id = state.idCounter;
-            id++;
-            state.idCounter = id.toString();
+        SET_TASKS(state: any, tasks: ITasksPending) {
+            state.tasks = tasks;
         },
 
-        ADD_TASK(state: any, task: ITaskPending) {
-            state.tasks.push(task);
+        ADD_TASK(state: any, {id, task}: ITaskPendingId) {
+            Vue.set(state.tasks, id, task);
         },
 
-        UPDATE_TASK(state: any, task: ITaskPending) {
-            const i = state.tasks.findIndex((e: ITaskPending) => {
-                return e.id === task.id;
-            });
+        UPDATE_TASK(state: any, {id, task}: ITaskPendingId) {
+            Vue.set(state.tasks, id, task);
+        },
 
-            if (i >= 0) {
-                Vue.set(state.tasks, i, task);
-            }
+        DELETE_TASK(state: any, id: string) {
+            Vue.delete(state.tasks, id);
         },
 
         COMPLETE_TASK(state: any, id: string) {
-            const i = state.tasks.findIndex((e: ITaskPending) => {
-                return e.id === id;
-            });
-
-            state.tasks.splice(i, 1);
+            Vue.delete(state.tasks, id);
         },
 
         MOVE_TASK_UP(state: any, id: string) {
@@ -80,122 +74,86 @@ export default {
             state.tasks.splice(i + 1, 0, state.tasks.splice(i, 1)[0]);
         },
 
-        UPDATE_SUBTASK_CHECK(state: any, payload: any) {
-            const i = state.tasks.findIndex((e: ITaskPending) => {
-                return e.id === payload.taskId;
-            });
+        UPDATE_SUBTASK_CHECK(state: any, {id, taskId, checked}: any) {
+            const task = state.tasks[taskId];
 
-            if (i >= 0) {
-                const j = state.tasks[i].subTasks.findIndex((e: ISubTask) => {
-                    return e.id === payload.id;
-                });
+            if (task) {
+                const sub = task.subTasks[id];
 
-                if (j >= 0) {
-                    state.tasks[i].subTasks[j].checked = payload.checked;
+                if (sub) {
+                    state.tasks[taskId].subTasks[id].checked = checked;
                 }
             }
         },
 
         // Current Task
-        SET_CURRENT_ID(state: any) {
-            state.current.id = state.idCounter;
+        SET_CURRENT_ID(state: any, id: string) {
+            state.currentId = id;
         },
 
         RESET_CURRENT_TASK(state: any) {
             state.current = {
-                id: '',
                 name: '',
                 notes: '',
-                subTasks: [],
-                subTaskId: 0,
-                tags: [],
+                subTasks: {},
+                tags: {},
+                completed: false,
+                dateCreated: null,
+                dateUpdated: null,
+                dateCompleted: null,
             } as ITaskPending;
+
+            state.currentId = '';
         },
 
         UPDATE_CURRENT_TASK(state: any, id: string) {
-            const task = state.tasks.find((t: ITaskDaily) => {
-                return t.id === id;
-            });
+            const task = state.tasks[id];
 
             if (task) {
-                state.current = Object.assign({}, task);
+                state.current = JSON.parse(JSON.stringify(task));
             }
         },
 
         // Subtasks of Current Task
-        INCREASE_CURRENT_SUBTASK_COUNTER(state: any) {
-            state.current.subTaskId++;
-        },
-
-        ADD_CURRENT_SUBTASK(state: any, task: ISubTask) {
-            state.current.subTasks.push(task);
-        },
-
-        DELETE_CURRENT_SUBTASK(state: any, id: number) {
-            const i = state.current.subTasks.findIndex((e: ISubTask) => {
-                return e.id === id;
-            });
-
-            if (i >= 0) {
-                state.current.subTasks.splice(i, 1);
+        ADD_CURRENT_SUBTASK(state: any, {id, subTask}: ISubTaskId) {
+            if (state.current.subTasks == null) {
+                state.current.subTasks = {};
             }
+
+            Vue.set(state.current.subTasks, id, subTask);
         },
 
-        UPDATE_CURRENT_SUBTASK_NAME(state: any, subTask: any) {
-            const i = state.current.subTasks.findIndex((e: ISubTask) => {
-                return e.id === subTask.id;
-            });
+        DELETE_CURRENT_SUBTASK(state: any, id: string) {
+            Vue.delete(state.current.subTasks, id);
+        },
 
-            if (i >= 0) {
-                state.current.subTasks[i].name = subTask.name;
+        UPDATE_CURRENT_SUBTASK_NAME(state: any, {id, name}: any) {
+            const subTask = state.current.subTasks[id];
+
+            if (subTask != null) {
+                subTask.name = name;
+                Vue.set(state.current.subTasks, id, subTask);
             }
         },
 
         // Tags of Current Task
         ADD_CURRENT_TAG(state: any, tagId: string) {
-            const i = state.current.tags.findIndex((t: string) => {
-                return t === tagId;
-            });
-
-            if (i === -1) {
-                state.current.tags.push(tagId);
+            if (state.current.tags == null) {
+                state.current.tags = {};
             }
+
+            Vue.set(state.current.tags, tagId, true);
         },
 
         DELETE_CURRENT_TAG(state: any, tagId: string) {
-            const i = state.current.tags.findIndex((t: string) => {
-                return t === tagId;
-            });
-
-            if (i >= 0) {
-                state.current.tags.splice(i, 1);
-            }
+            Vue.delete(state.current.tags, tagId);
         },
 
         // Tags
-        ADD_TAG(state: any, args: any) {
-            const {tag, id} = args;
-            const i = state.tasks.findIndex((t: ITaskPending) => {
-                return t.id === id;
-            });
-
-            if (i >= 0) {
-                state.tasks[i].tags.push(tag);
-            }
-        },
-
         CLEAN_TAGS(state: any, id: string) {
-            if (!state.tasks || state.tasks.length <= 0) {
-                return;
-            }
-
-            for (const t of state.tasks) {
-                const i = t.tags.findIndex((tag: string) => {
-                    return tag === id;
-                });
-
-                if (i >= 0) {
-                    t.tags.splice(i, 1);
+            for (const key in state.tasks) {
+                if (state.tasks[key].tags != null) {
+                    Vue.delete(state.tasks[key].tags, id);
                 }
             }
         },
@@ -203,16 +161,22 @@ export default {
 
     actions: {
         // Tasks
-        updateCounter: (context: any) => {
-            context.commit('INCREASE_ID_COUNTER');
+        addTask: (context: any, task: ITaskDaily) => {
+            const id = firebase.database().ref('pending').push().key;
+            task.dateCreated = new Date();
+            context.commit('ADD_TASK', {id, task});
+            firebase.database().ref('daily/' + id).set(task);
         },
 
-        addTask: (context: any, task: ITaskPending) => {
-            context.commit('ADD_TASK', task);
+        updateTask: (context: any, {id, task}: ITaskDailyId) => {
+            task.dateUpdated = new Date();
+            context.commit('UPDATE_TASK', {id, task});
+            firebase.database().ref('pending/' + id).set(task);
         },
 
-        updateTask: (context: any, task: ITaskPending) => {
-            context.commit('UPDATE_TASK', task);
+        deleteTask: (context: any, id: string) => {
+            context.commit('DELETE_TASK', id);
+            firebase.database().ref('pending/' + id).remove();
         },
 
         completeTask: (context: any, id: string) => {
@@ -227,25 +191,28 @@ export default {
             context.commit('MOVE_TASK_DOWN', id);
         },
 
-        updateCheck: (context: any, payload: any) => {
-            context.commit('UPDATE_SUBTASK_CHECK', payload);
+        updateCheck: (context: any, {id, taskId, checked}: any) => {
+            context.commit('UPDATE_SUBTASK_CHECK', {id, taskId, checked});
+            firebase.database().ref('pending/' + taskId + '/subTasks/' + id).update({checked});
         },
 
         // Current Task
         updateCurrent: (context: any, id: string) => {
             context.commit('UPDATE_CURRENT_TASK', id);
+            context.commit('SET_CURRENT_ID', id);
         },
 
         // SubTasks of Current Task
-        addCurrentSubTask: (context: any, task: ISubTask) => {
-            context.commit('ADD_CURRENT_SUBTASK', task);
+        addCurrentSubTask: (context: any, subTask: ISubTask) => {
+            const id = firebase.database().ref().push().key;
+            context.commit('ADD_CURRENT_SUBTASK', {id, subTask});
         },
 
         deleteCurrentSubTask: (context: any, id: string) => {
             context.commit('DELETE_CURRENT_SUBTASK', id);
         },
 
-        updateCurrentSubTaskName: (context: any, subTask: any) => {
+        updateCurrentSubTaskName: (context: any, subTask: ISubTask) => {
             context.commit('UPDATE_CURRENT_SUBTASK_NAME', subTask);
         },
 
@@ -256,12 +223,6 @@ export default {
 
         deleteCurrentTag: (context: any, tagId: string) => {
             context.commit('DELETE_CURRENT_TAG', tagId);
-        },
-
-        // Tags
-        addTag: (context: any, args: any) => {
-            const {tag, id} = args;
-            context.commit('ADD_TAG', args);
         },
     },
 };

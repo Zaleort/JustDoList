@@ -34,13 +34,13 @@
                     enter-active-class="animate faster fade-in-up-slight"
                     leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
-                    <div class="alert-info mt-1" v-if="dailyTasks.length === 0 || !dailyTasks" :key="'info'">
+                    <div class="alert-info mt-1" v-if="!dailyTasks || Object.keys(dailyTasks).length === 0" :key="'info'">
                         <p>
                             Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarias se reinician automáticamente
                             a medianoche y llevan un seguimiento de tu racha.
                         </p>
                     </div>
-                    <Task @openDialog="openDailyDialog(true)" v-for="task of dailyTasks" :key="task.id" v-bind="task" :type="'daily'"/>
+                    <Task @openDialog="openDailyDialog(true)" v-for="(task, id) of dailyTasks" :key="id" :id="id" v-bind="task" :type="'daily'"/>
                 </transition-group>
             </section>
 
@@ -58,13 +58,13 @@
                     enter-active-class="animate faster fade-in-up-slight"
                     leave-active-class="absolute animate fastest fade-out"
                     move-class="move">
-                    <div class="alert-info mt-1" v-if="pendingTasks.length === 0 || !pendingTasks" :key="'info'">
+                    <div class="alert-info mt-1" v-if="Object.keys(pendingTasks).length === 0 || !pendingTasks" :key="'info'">
                         <p>
                             Haz click en el botón + para añadir una nueva tarea pendiente. Puedes especificar un plazo para terminar
                             las tareas pendientes, y una vez completadas se moverán a tu historial de tareas completadas.
                         </p>
                     </div>
-                    <Task @openDialog="openPendingDialog(true)" v-for="task in pendingTasks" :key="task.id" v-bind="task" :type="'pending'"/>
+                    <Task @openDialog="openPendingDialog(true)" v-for="(task, id) in pendingTasks" :key="id" :id="id" v-bind="task" :type="'pending'"/>
                 </transition-group>
             </section>
         </transition-group>

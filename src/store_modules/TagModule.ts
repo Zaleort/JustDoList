@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import '../interfaces/ITag';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 /*
     Módulo de las etiquetas. Aquí se almacenará un array con las etiquetas del usuario
@@ -9,62 +11,60 @@ import '../interfaces/ITag';
 export default {
     namespaced: true,
     state: {
-        tags: [
-            {
-                id: '0',
+        tags: {
+            kgjdkg: {
                 name: 'Trabajo',
-                color: '#ff0000',
+                color: '#000000',
             },
-        ] as ITag[],
-
-        idCounter: '0',
+        } as ITags,
     },
 
     mutations: {
+        SET_TAGS(state: any, tags: ITags) {
+            state.tags = tags;
+        },
+
         INCREASE_ID_COUNTER(state: any) {
             let id = state.idCounter;
             id++;
             state.idCounter = id.toString();
         },
 
-        ADD_TAG(state: any, tag: ITag) {
-            state.tags.push(tag);
+        ADD_TAG(state: any, {id, tag}: any) {
+            Vue.set(state.tags, id, tag);
         },
 
-        UPDATE_TAG(state: any, tag: ITag) {
-            const i = state.tags.findIndex((t: ITag) => {
-                return t.id === tag.id;
-            });
-
-            if (i >= 0) {
-                Vue.set(state.tags, i, tag);
-            }
+        UPDATE_TAG(state: any, {id, tag}: any) {
+            Vue.set(state.tags, id, tag);
         },
 
         DELETE_TAG(state: any, id: string) {
-            const i = state.tags.findIndex((t: ITag) => {
-                return t.id === id;
-            });
-
-            if (i >= 0) {
-                state.tags.splice(i, 1);
-            }
+            Vue.delete(state.tags, id);
         },
     },
 
     actions: {
         addTag: (context: any, tag: ITag) => {
-            context.commit('ADD_TAG', tag);
+            return new Promise((resolve) => {
+                const id = firebase.database().ref('tags').push().key;
+                context.commit('ADD_TAG', {id, tag});
+                firebase.database().ref('tags/' + id).set(tag);
+
+                resolve({ id });
+            });
         },
 
-        updateTag: (context: any, tag: ITag) => {
-            context.commit('UPDATE_TAG', tag);
+        updateTag: (context: any, {id, tag}: any) => {
+            context.commit('UPDATE_TAG', {id, tag});
+            firebase.database().ref('tags/' + id).set(tag);
         },
 
         deleteTag: (context: any, id: string) => {
             context.commit('DELETE_TAG', id);
             context.commit('pending/CLEAN_TAGS', id, { root: true });
             context.commit('daily/CLEAN_TAGS', id, { root: true });
+
+            firebase.database().ref('tags/' + id).remove();
         },
     },
 };

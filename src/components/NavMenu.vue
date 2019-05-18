@@ -4,8 +4,6 @@
             <ul class="nav-menu-list">
                 <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/tareas">Tareas</router-link></li>
                 <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/completadas">Completadas</router-link></li>
-                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/estadisticas">Estadísticas</router-link></li>
-                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/grupos">Grupos</router-link></li>
             </ul>
         </nav>
         <div class="nav-back" @click="$store.dispatch('closeNav')"></div>

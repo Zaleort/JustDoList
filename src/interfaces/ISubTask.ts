@@ -1,5 +1,13 @@
+interface ISubTasks {
+    [id: string]: ISubTask;
+}
+
 interface ISubTask {
-    id: number;
     name: string;
     checked: boolean;
+}
+
+interface ISubTaskId {
+    id: string;
+    subTask: ISubTask;
 }

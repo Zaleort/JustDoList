@@ -22,8 +22,8 @@
 
             <div class="dialog-form-group">
                 <p class="dialog-form-name">Subtareas</p>
-                <div class="relative subtask-group" v-for="subTask of current.subTasks" :key="subTask.id">
-                    <span @click="deleteSubTask(subTask.id)" class="delete-subtask-icon">
+                <div class="relative subtask-group" v-for="(subTask, id) of current.subTasks" :key="id">
+                    <span @click="deleteSubTask(id)" class="delete-subtask-icon">
                         <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                             <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
                         </svg>
@@ -32,7 +32,7 @@
                         type="text"
                         :value="subTask.name"
                         ref="subTasks"
-                        @blur="updateSubTaskName(subTask.id, $event)">
+                        @blur="updateSubTaskName(id, $event)">
                 </div>
                 <div class="relative subtask-group">
                     <span @click="addSubTask" class="text-input-icon left">
@@ -80,8 +80,9 @@
                         class="tag-cloud"
                         enter-active-class="animate faster fade-in-up-slight"
                         move-class="move">
-                            <tag v-for="tag in tagCloud" 
-                                :key="tag.id" 
+                            <tag v-for="(tag, id) in tagCloud" 
+                                :key="id"
+                                :id="id"
                                 v-bind="tag"
                                 :isModal="true"
                                 :type="'daily'" />
@@ -90,7 +91,7 @@
             </div>
 
             <div class="dialog-footer">
-                <input type="hidden" ref="taskId" v-model="current.id">
+                <input type="hidden" ref="taskId" v-model="currentId">
                 <input @click="closeDialog" class="mr-1 cancel-button button button-alpha font-danger" type="button" value="Cancelar">
                 <input @click="processTask" ref="taskSubmit" class="save-button button button-success" type="submit" :value="submitText">
             </div>
@@ -117,6 +118,10 @@ export default class TaskDailyDialog extends Vue {
         return this.$store.state.daily.current;
     }
 
+    get currentId(): string {
+        return this.$store.state.daily.currentId;
+    }
+
     set frecuencyNumber(fNumber: number) {
         this.$store.commit('daily/SET_CURRENT_FRECUENCY_NUMBER', fNumber);
     }
@@ -135,48 +140,41 @@ export default class TaskDailyDialog extends Vue {
         return current.charAt(0);
     }
 
-    get tagCloud() {
-        if (!this.$store.state.tag) { return; }
+    get tagCloud(): ITags {
+        if (!this.$store.state.tag) { return {}; }
 
         const ids = this.current.tags;
-        const tags = this.$store.state.tag.tags.filter((t: ITag) => {
-            for (const id of ids) {
-                if (id === t.id) {
-                    return true;
-                }
+        if (ids == null) { return {}; }
 
-                continue;
+        const tags: ITags = {};
+
+        for (const id in this.$store.state.tag.tags) {
+            if (ids[id] != null) {
+                tags[id] = this.$store.state.tag.tags[id];
             }
-
-            return false;
-        });
+        }
 
         return tags;
     }
 
-    get selectTags() {
-        if (!this.$store) { return; }
+    get selectTags(): ITags {
+        if (!this.$store) { return {}; }
 
-        const all = this.$store.state.tag.tags.slice();
+        const all = this.$store.state.tag.tags;
         return all;
     }
 
     private addSubTask(): void {
-        let task: ISubTask;
-
-        this.$store.commit('daily/INCREASE_CURRENT_SUBTASK_COUNTER');
-        const taskId = this.current.subTaskId;
         const taskName = (this.$refs.taskSubTask as HTMLInputElement).value;
 
         if (!taskName || taskName.trim().length === 0) { return; }
 
-        task = {
-            id: taskId,
+        const subTask: ISubTask = {
             name: taskName,
             checked: false,
         };
 
-        this.$store.dispatch('daily/addCurrentSubTask', task);
+        this.$store.dispatch('daily/addCurrentSubTask', subTask);
         (this.$refs.taskSubTask as HTMLInputElement).value = '';
     }
 
@@ -194,17 +192,14 @@ export default class TaskDailyDialog extends Vue {
     }
 
     private addNewTag(name: string): void {
-        this.$store.commit('tag/INCREASE_ID_COUNTER');
-        const tagId = this.$store.state.tag.idCounter;
-
         const newTag = {
-            id: tagId,
             name,
             color: '#7400C9',
         } as ITag;
 
-        this.$store.dispatch('tag/addTag', newTag);
-        this.$store.dispatch('daily/addCurrentTag', tagId);
+        this.$store.dispatch('tag/addTag', newTag).then(response => {
+            this.$store.dispatch('daily/addCurrentTag', response.id);
+        });
     }
 
     private processTask(): void {
@@ -214,9 +209,7 @@ export default class TaskDailyDialog extends Vue {
         const lastSubTask = (this.$refs.taskSubTask as HTMLInputElement).value;
 
         if (lastSubTask) {
-            this.$store.commit('daily/INCREASE_CURRENT_SUBTASK_COUNTER');
             const subTask = {
-                id: this.current.subTaskId,
                 name: lastSubTask,
                 checked: false,
             };
@@ -224,14 +217,10 @@ export default class TaskDailyDialog extends Vue {
             this.$store.dispatch('daily/addCurrentSubTask', subTask);
         }
 
-        if (!this.current.id || this.current.id.length <= 0) {
-            // Generar y asignar ID
-            // Añadir tarea
-            this.$store.commit('daily/INCREASE_ID_COUNTER');
-            this.$store.commit('daily/SET_CURRENT_ID');
+        if (!this.currentId || this.currentId.length <= 0) {
             this.$store.dispatch('daily/addTask', this.current);
         } else {
-            this.$store.dispatch('daily/updateTask', this.current);
+            this.$store.dispatch('daily/updateTask', {id: this.currentId, task: this.current});
         }
 
         this.closeDialog();

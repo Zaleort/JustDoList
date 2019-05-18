@@ -1,8 +1,15 @@
+interface ITasksPending {
+    [id: string]: ITaskPending;
+}
+
 interface ITaskPending {
-    id: string;
     name: string;
     notes: string;
-    subTasks: ISubTask[];
-    subTaskId: number;
-    tags: string[];
+    subTasks?: ISubTasks;
+    tags?: {};
+}
+
+interface ITaskPendingId {
+    id: string;
+    task: ITaskPending;
 }

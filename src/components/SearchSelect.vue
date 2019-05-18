@@ -13,11 +13,11 @@
             @keyup="filter()"
             :placeholder="placeholder">
         <div v-show="openDropdown" class="ss-container">
-            <span v-show="filteredItems.length === 0" class="ss-no-results">{{ noResults }}</span>
+            <span v-show="Object.keys(filteredItems).length === 0" class="ss-no-results">{{ noResults }}</span>
             <ul class="ss-dropdown">
-                <li @click.prevent="setSelected(item.id)"
-                    v-for="item of filteredItems" 
-                    :key="item.id">
+                <li @click.prevent="setSelected(id)"
+                    v-for="(item, id) of filteredItems" 
+                    :key="id">
                     {{ item.name }}
                 </li>
             </ul>
@@ -30,11 +30,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class SearchSelect extends Vue {
-    @Prop() private items!: any;
+    @Prop() private items!: Object | any;
     @Prop() private placeholder!: string;
     @Prop({ default: 'Sin resultados' }) private noResults!: string;
 
-    private filteredItems = this.items || [];
+    private filteredItems: Object = this.items || {};
     private openDropdown = false;
 
     private mounted() {
@@ -60,13 +60,19 @@ export default class SearchSelect extends Vue {
 
     private selectCustom() {
         const el = (this.$refs.input as HTMLInputElement).value;
-        const exists = this.items.find((i: any) => {
-            return i.name === el
-                || i.name.localeCompare(el, undefined, { sensitivity: 'accent' }) === 0;
-        });
+
+        let exists = false;
+        let id = '';
+        for (const key in this.items) {
+            if (el === this.items[key].name
+                || this.items[key].name.localeCompare(el, undefined, { sensitivity: 'accent' }) === 0) {
+                    exists = true;
+                    id = key;
+            }
+        }
 
         if (exists) {
-            this.$emit('selected', exists.id);
+            this.$emit('selected', id);
         } else {
             this.$emit('created', el);
         }
@@ -83,11 +89,14 @@ export default class SearchSelect extends Vue {
             return;
         }
 
-        const arr = this.items.filter((i: any) => {
-            return i.name.includes(value);
-        });
+        let obj: any = {};
+        for (const key in this.items) {
+            if (this.items[key].name.toUpperCase().includes(value.toUpperCase())) {
+                obj[key] = this.items[key]
+            }
+        }
 
-        this.filteredItems = arr;
+        this.filteredItems = obj;
     }
 }
 </script>

@@ -25,7 +25,7 @@
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div ref="subTasks" class="task-subtasks-list" v-if="hasSubTasks">
-            <SubTask v-for="subTask in subTasks" :key="subTask.id" v-bind="subTask" :taskId="id" :taskType="type" />
+            <SubTask v-for="(subTask, key) in subTasks" :key="key" :id="key" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
         <div class="relative task-card-footer">
             <span v-if="dateDeadline">
@@ -38,7 +38,7 @@
                 </svg>
             </div>
             <div class="tooltip">Racha</div>
-            <div v-if="tags && tags.length > 0" class="task-tags-icon">
+            <div v-if="tags && Object.keys(tags).length > 0" class="task-tags-icon">
                 <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
                     <path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"></path>
                 </svg>
@@ -61,9 +61,12 @@ export default class Task extends Vue {
     @Prop() private type!: string;
     @Prop() private name!: string;
     @Prop() private notes!: string;
-    @Prop() private subTasks!: ISubTask[];
-    @Prop({ default: 0 }) private subTaskId!: number;
-    @Prop() private tags!: string[];
+    @Prop({default: function() {
+        return {};
+    }}) private subTasks!: ISubTasks;
+    @Prop({default: function() {
+        return {};
+    }}) private tags!: any;
 
     @Prop() private frecuency!: string;
     @Prop() private streak!: number;
@@ -119,23 +122,21 @@ export default class Task extends Vue {
     }
 
     get hasSubTasks(): boolean {
-        return this.subTasks && this.subTasks.length > 0;
+        return this.subTasks && Object.keys(this.subTasks).length > 0;
     }
 
     get tagsTooltip(): string {
-        if (!this.$store) { return ''; }
+        if (!this.$store.state.tag.tags) { return ''; }
+        if (this.tags == null) { return ''; }
 
-        let tags = this.$store.state.tag.tags.filter((t: ITag) => {
-            for (const id of this.tags) {
-                if (t.id === id) {
-                    return true;
-                }
+        let tags: string[] = []
+
+        for (const id in this.$store.state.tag.tags) {
+            if (this.tags[id]) {
+                tags.push(this.$store.state.tag.tags[id].name);
             }
+        }
 
-            return false;
-        });
-
-        tags = tags.map((t: ITag) => t.name);
         return tags.join(', ');
     }
 

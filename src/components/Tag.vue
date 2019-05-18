@@ -4,7 +4,7 @@
             <span v-if="isModal"></span>
             <input ref="tagName" 
                 @focus="onFocus = true"
-                @blur="updateName; onFocus = false" 
+                @blur="updateName(); onFocus = false" 
                 @keydown.enter="updateName" 
                 class="tag-name" 
                 type="text" 
@@ -61,7 +61,7 @@ export default class Tag extends Vue {
     private updateName() {
         const eName = this.$refs.tagName as HTMLInputElement;
         const name = eName.value;
-        const current = this.$store.state.tag.tags.find((x: ITag) => x.id === this.id).name;
+        const current = this.$store.state.tag.tags[this.id].name;
 
         if (!name) {
             eName.value = current;
@@ -71,12 +71,11 @@ export default class Tag extends Vue {
         if (name === current) { return; }
 
         const tag = {
-            id: this.id,
             name,
             color: this.color,
         } as ITag;
 
-        this.$store.dispatch('tag/updateTag', tag);
+        this.$store.dispatch('tag/updateTag', {id: this.id, tag});
     }
 
     private deleteTag() {

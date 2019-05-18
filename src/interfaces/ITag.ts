@@ -1,5 +1,8 @@
+interface ITags {
+    [id: string]: ITag;
+}
+
 interface ITag {
-    id: string;
     name: string;
     color: string;
 }
