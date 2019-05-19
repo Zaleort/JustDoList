@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { ModuleTree, ActionTree, StoreOptions } from 'vuex';
 import TaskPendingModule from './store_modules/TaskPendingModule';
 import TaskDailyModule from './store_modules/TaskDailyModule';
 import TagModule from './store_modules/TagModule';
@@ -8,53 +8,50 @@ import 'firebase/database';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-    modules: {
-        daily: TaskDailyModule,
-        pending: TaskPendingModule,
-        tag: TagModule,
+const modules = {
+    daily: TaskDailyModule,
+    pending: TaskPendingModule,
+    tag: TagModule,
+};
+
+const actions = {
+    toggleNav: () => {
+        const navMenu = document.getElementById('nav-menu')!;
+        navMenu.classList.toggle('nav-menu-show');
     },
 
-    state: {
-
+    closeNav: () => {
+        const navMenu = document.getElementById('nav-menu')!;
+        navMenu.classList.remove('nav-menu-show');
     },
 
-    mutations: {
+    setStateFromDatabase: (context: any) => {
+        firebase.database().ref('tags').once('value')
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    context.commit('tag/SET_TAGS', snapshot.val());
+                }
+            });
 
+        firebase.database().ref('pending').once('value')
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    context.commit('pending/SET_TASKS', snapshot.val());
+                }
+            });
+
+        firebase.database().ref('daily').once('value')
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    context.commit('daily/SET_TASKS', snapshot.exportVal());
+                }
+            });
     },
+};
 
-    actions: {
-        toggleNav: () => {
-            const navMenu: any = document.getElementById('nav-menu');
-            navMenu.classList.toggle('nav-menu-show');
-        },
+const store = {
+    modules,
+    actions,
+};
 
-        closeNav: () => {
-            const navMenu: any = document.getElementById('nav-menu');
-            navMenu.classList.remove('nav-menu-show');
-        },
-
-        setStateFromDatabase: (context: any) => {
-            firebase.database().ref('tags').once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        context.commit('tag/SET_TAGS', snapshot.val());
-                    }
-                });
-
-            firebase.database().ref('pending').once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        context.commit('pending/SET_TASKS', snapshot.val());
-                    }
-                });
-
-            firebase.database().ref('daily').once('value')
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        context.commit('daily/SET_TASKS', snapshot.exportVal());
-                    }
-                });
-        },
-    },
-});
+export default new Vuex.Store(store);

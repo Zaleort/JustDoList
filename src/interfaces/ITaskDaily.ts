@@ -1,3 +1,9 @@
+interface DailyState {
+    tasks: ITasksDaily;
+    current: ITaskDaily;
+    currentId: string;
+}
+
 interface ITasksDaily {
     [id: string]: ITaskDaily;
 }
@@ -6,14 +12,14 @@ interface ITaskDaily {
     name: string;
     notes?: string;
     subTasks?: ISubTasks;
-    tags: {};
+    tags?: {};
     frecuency?: string;
-    streak?: number;
+    streak: number;
     completed?: boolean;
-    dateCreated?: Date | null;
-    dateUpdated?: Date | null;
-    dateCompleted?: Date | null;
-    dateLastCompleted?: Date | null;
+    dateCreated?: number | null;
+    dateUpdated?: number | null;
+    dateCompleted?: number | null;
+    dateLastCompleted?: number | null;
 }
 
 interface ITaskDailyId {
