@@ -46,6 +46,13 @@ const actions = {
                     context.commit('daily/SET_TASKS', snapshot.exportVal());
                 }
             });
+
+        firebase.database().ref('completed').once('value')
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    context.commit('pending/SET_COMPLETED', snapshot.exportVal());
+                }
+            });
     },
 };
 

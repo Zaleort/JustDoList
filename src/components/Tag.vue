@@ -122,8 +122,6 @@ export default class Tag extends Vue {
         border-top-color: white;
         border-right-color:white;
         border-bottom-color:white;
-        margin-left: 7px;
-        margin-right: 7px;
         padding: 7px 12px;
     }
 

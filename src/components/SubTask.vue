@@ -1,6 +1,6 @@
 <template>
     <label class="checkbox-group--sm">
-        <input @change="updateCheck" ref="checkbox" class="checkbox" type="checkbox" :checked="checked">
+        <input @change="updateCheck" ref="checkbox" class="checkbox" :disabled="isCompleted" type="checkbox" :checked="checked">
         <div class="checkbox-indicator--sm"></div>
         <p class="checkbox-title">{{ name }}</p>
     </label>
@@ -16,6 +16,10 @@ export default class SubTask extends Vue {
     @Prop() private checked!: boolean;
     @Prop() private taskId!: string;
     @Prop() private taskType!: string;
+
+    get isCompleted() {
+        return this.taskType === 'completed';
+    }
 
     private updateCheck() {
         const checked = (this.$refs.checkbox as HTMLInputElement).checked;

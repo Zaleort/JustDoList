@@ -16,7 +16,7 @@ import NavMenu from './components/NavMenu.vue';
 })
 
 export default class App extends Vue {
-    beforeMount() {
+    public beforeCreate() {
         this.$store.dispatch('setStateFromDatabase');
     }
 }

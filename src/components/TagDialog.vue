@@ -105,7 +105,7 @@ export default class TagDialog extends Vue {
 
         .tag-cloud > .tag-card {
             flex-grow: 1;
-            flex: 0 1 46%;
+            flex: 0 1 48%;
         }
     }
 </style>

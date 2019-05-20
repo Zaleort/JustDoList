@@ -39,6 +39,10 @@ const mutations: MutationTree<PendingState> = {
         state.tasks = tasks;
     },
 
+    SET_COMPLETED(state, completed: ITasksPending) {
+        state.completed = completed;
+    },
+
     ADD_TASK(state, {id, task}: ITaskPendingId) {
         Vue.set(state.tasks, id, task);
     },

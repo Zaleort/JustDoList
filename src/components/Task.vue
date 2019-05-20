@@ -61,21 +61,21 @@ export default class Task extends Vue {
     @Prop() private type!: string;
     @Prop() private name!: string;
     @Prop() private notes!: string;
-    @Prop({default: function() {
+    @Prop({default() {
         return {};
     }}) private subTasks!: ISubTasks;
-    @Prop({default: function() {
+    @Prop({default() {
         return {};
     }}) private tags!: any;
 
     @Prop() private frecuency!: string;
     @Prop() private streak!: number;
 
-    @Prop() private dateCreated!: Date;
-    @Prop() private dateUpdated!: Date;
-    @Prop() private dateCompleted!: Date;
-    @Prop() private dateLastCompleted!: Date;
-    @Prop() private dateDeadline!: Date;
+    @Prop() private dateCreated!: number;
+    @Prop() private dateUpdated!: number;
+    @Prop() private dateCompleted!: number;
+    @Prop() private dateLastCompleted!: number;
+    @Prop() private dateDeadline!: number;
 
     @Prop({ default: false })private completed!: boolean;
     private showOptionsMenu: boolean = false;
@@ -84,9 +84,9 @@ export default class Task extends Vue {
         let isDisabled;
 
         if (this.type === 'pending') {
-            isDisabled = this.$store.state.pending.tasks.length <= 1;
+            isDisabled = Object.keys(this.$store.state.pending.tasks).length <= 1;
         } else if (this.type === 'daily') {
-            isDisabled = this.$store.state.daily.tasks.length <= 1;
+            isDisabled = Object.keys(this.$store.state.daily.tasks).length <= 1;
         }
 
         return [
@@ -129,7 +129,7 @@ export default class Task extends Vue {
         if (!this.$store.state.tag.tags) { return ''; }
         if (this.tags == null) { return ''; }
 
-        let tags: string[] = []
+        const tags: string[] = [];
 
         for (const id in this.$store.state.tag.tags) {
             if (this.tags[id]) {
@@ -163,7 +163,7 @@ export default class Task extends Vue {
 
     private refreshTask(): void {
         if (this.type !== 'daily') { return; }
-        if (!this.dateCompleted || this.dateCompleted === null) { return; }
+        if (this.dateCompleted == null || this.dateCompleted === 0) { return; }
 
         const frecuency = this.frecuency.charAt(0);
         const fNumber = parseInt(this.frecuency.substring(1, this.frecuency.length), 10);
@@ -277,11 +277,14 @@ export default class Task extends Vue {
     @import '../scss/variables';
 
     .task-card {
+        display: flex;
+        flex-direction: column;
         padding: 21px 16px;
     }
 
     .task-notes {
         font-size: 0.8em;
+        word-break: break-all;
         color: $grey700;
         margin-top: 12px;
         margin-bottom: 0;
@@ -422,7 +425,7 @@ export default class Task extends Vue {
     .task-card-footer {
         display: flex;
         flex-direction: row-reverse;
-        margin-top: 12px;
+        margin-top: 16px;
     }
 
     .task-streak-icon {
@@ -483,5 +486,11 @@ export default class Task extends Vue {
         padding: 9px 16px;
         border-radius: 5px;
         line-height: 1.33;
+    }
+
+    @media only screen and (min-width: $laptop) {
+        .task-card-footer {
+            margin-top: auto;
+        }
     }
 </style>

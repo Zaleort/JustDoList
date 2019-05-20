@@ -166,7 +166,7 @@ export default class TaskPendingDialog extends Vue {
             color: '#7400C9',
         } as ITag;
 
-        this.$store.dispatch('tag/addTag', newTag).then(response => {
+        this.$store.dispatch('tag/addTag', newTag).then((response) => {
             this.$store.dispatch('pending/addCurrentTag', response.id);
         });
     }

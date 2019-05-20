@@ -30,11 +30,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class SearchSelect extends Vue {
-    @Prop() private items!: Object | any;
+    @Prop() private items!: object | any;
     @Prop() private placeholder!: string;
     @Prop({ default: 'Sin resultados' }) private noResults!: string;
 
-    private filteredItems: Object = this.items || {};
+    private filteredItems: object = this.items || {};
     private openDropdown = false;
 
     private mounted() {
@@ -89,10 +89,10 @@ export default class SearchSelect extends Vue {
             return;
         }
 
-        let obj: any = {};
+        const obj: any = {};
         for (const key in this.items) {
             if (this.items[key].name.toUpperCase().includes(value.toUpperCase())) {
-                obj[key] = this.items[key]
+                obj[key] = this.items[key];
             }
         }
 

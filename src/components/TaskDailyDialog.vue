@@ -197,7 +197,7 @@ export default class TaskDailyDialog extends Vue {
             color: '#7400C9',
         } as ITag;
 
-        this.$store.dispatch('tag/addTag', newTag).then(response => {
+        this.$store.dispatch('tag/addTag', newTag).then((response) => {
             this.$store.dispatch('daily/addCurrentTag', response.id);
         });
     }

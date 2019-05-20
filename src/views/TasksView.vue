@@ -235,7 +235,10 @@ export default class TasksView extends Vue {
 
         .search-box {
             margin-bottom: 0;
-            margin-right: 12px;
+        }
+
+        .tags-button {
+            margin-left: 12px;
         }
     }
 
