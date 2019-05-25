@@ -2,7 +2,7 @@
     <div class="card task-card" ref="task">
         <div class="card-header">
             <div class="checkbox-group">
-                <button @click="completeTask" class="checkbox-button checkbox-indicator" :class="{ checked: completed }"></button>
+                <button @click="undoComplete" class="checkbox-button checkbox-indicator" :class="{ checked: completed }"></button>
                 <p class="checkbox-title">{{ name }}</p>
             </div>
             <span class="task-options-icon">
@@ -106,15 +106,18 @@ export default class TaskCompleted extends Vue {
         return tags.join(', ');
     }
 
-    private completeTask(): void {
-        this.$store.dispatch('pending/completeTask', this.id);
+    private undoComplete(): void {
+        const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
+        (this.$refs.task as HTMLElement).style.width = width + 'px';
+
+        this.$store.dispatch('pending/undoComplete', this.id);
     }
 
     private deleteTask(): void {
         const width = (this.$refs.task as HTMLElement).getBoundingClientRect().width;
         (this.$refs.task as HTMLElement).style.width = width + 'px';
 
-        this.$store.dispatch('pending/deleteTask', this.id);
+        this.$store.dispatch('pending/deleteCompletedTask', this.id);
     }
 
     private toggleSubTasks(): void {
@@ -140,4 +143,3 @@ export default class TaskCompleted extends Vue {
     margin-right: 7px;
 }
 </style>
-

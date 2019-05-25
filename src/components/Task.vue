@@ -179,11 +179,11 @@ export default class Task extends Vue {
         const diffCompleted = Math.floor(Math.abs((today.getTime() - completed.getTime()) / 8.64e7));
 
         if (this.shouldResetStreak(frecuency, fNumber, diffCompleted)) {
-            this.$store.dispatch('daily/resetStreak');
+            this.$store.dispatch('daily/resetStreak', this.id);
         }
 
         if (this.shouldRefreshTask(frecuency, fNumber, diffCreated, diffCompleted)) {
-            this.$store.dispatch('daily/refreshTask');
+            this.$store.dispatch('daily/refreshTask', this.id);
         }
     }
 

@@ -146,6 +146,19 @@ const mutations: MutationTree<PendingState> = {
             }
         }
     },
+
+    // Completed Tasks
+    UNDO_COMPLETE(state, id: string) {
+        if (state.completed[id] == null) { return; }
+        state.tasks[id] = state.completed[id];
+        state.tasks[id].completed = false;
+        Vue.delete(state.completed, id);
+    },
+
+    DELETE_COMPLETED_TASK(state, id: string) {
+        if (state.completed[id] == null) { return; }
+        Vue.delete(state.completed, id);
+    },
 };
 
 const actions: ActionTree<PendingState, any> = {
@@ -214,6 +227,20 @@ const actions: ActionTree<PendingState, any> = {
 
     deleteCurrentTag: (context, tagId: string) => {
         context.commit('DELETE_CURRENT_TAG', tagId);
+    },
+
+    // Completed tasks
+    undoComplete: (context, id: string) => {
+        context.commit('UNDO_COMPLETE', id);
+        if (context.state.tasks[id] != null) {
+            firebase.database().ref('pending/' + id).set(context.state.tasks[id]);
+            firebase.database().ref('completed/' + id).remove();
+        }
+    },
+
+    deleteCompletedTask: (context, id: string) => {
+        context.commit('DELETE_COMPLETED_TASK', id);
+        firebase.database().ref('completed/' + id).remove();
     },
 };
 
