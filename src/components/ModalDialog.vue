@@ -101,6 +101,11 @@ export default class ModalDialog extends Vue {
     }
 }
 
+.dialog-form-pending-time-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .dialog-form-name {
     user-select: none;
     font-family: $montserrat;
@@ -177,6 +182,16 @@ export default class ModalDialog extends Vue {
             width: 33%;
         }
     }
+
+    .dialog-form-pending-time-group {
+        flex-direction: row;
+        justify-content: space-between;
+
+        .text-input {
+            width: 49%;
+        }
+    }
+
 }
 
 @media only screen and (min-width: $laptop) {

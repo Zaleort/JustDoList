@@ -15,10 +15,10 @@ interface ITaskPending {
     subTasks?: ISubTasks;
     tags?: {};
     completed?: boolean;
-    dateCreated?: number | null;
-    dateUpdated?: number | null;
-    dateCompleted?: number | null;
-    dateDeadline?: number | null;
+    dateCreated: number;
+    dateUpdated: number;
+    dateCompleted: number;
+    dateDeadline: number;
 }
 
 interface ITaskPendingId {

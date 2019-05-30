@@ -20,7 +20,7 @@
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div class="task-card-footer">
-            <span class="roboto task-completed-full-date" v-if="dateCompleted">
+            <span class="roboto task-full-date" v-if="dateCompleted">
                 {{ fullDate }}
             </span>
             <div v-if="tags && Object.keys(tags).length > 0" class="task-tags-icon">
@@ -134,12 +134,3 @@ export default class TaskCompleted extends Vue {
     }
 }
 </script>
-
-<style lang="scss">
-@import '../scss/variables';
-
-.task-completed-full-date {
-    color: $grey500;
-    margin-right: 7px;
-}
-</style>

@@ -99,6 +99,38 @@ const mutations: MutationTree<PendingState> = {
         }
     },
 
+    SET_DEADLINE_DATE(state, date: string) {
+        if (!date) {
+            state.current.dateDeadline = 0;
+            return;
+        }
+
+        const last = new Date(state.current.dateDeadline);
+        const now = new Date(date);
+
+        now.setHours(last.getHours(), last.getMinutes(), 0, 0);
+        state.current.dateDeadline = now.getTime();
+    },
+
+    SET_DEADLINE_TIME(state, time: string) {
+        let now;
+        if (!state.current.dateDeadline || state.current.dateDeadline === 0) {
+            now = new Date();
+        } else {
+            now = new Date(state.current.dateDeadline);
+        }
+
+        if (!time) {
+            now.setHours(0, 0, 0, 0);
+            state.current.dateDeadline = now.getTime();
+            return;
+        }
+
+        const hhmm: any = time.split(':');
+        now.setHours(hhmm[0], hhmm[1], 0, 0);
+        state.current.dateDeadline = now.getTime();
+    },
+
     // Subtasks of Current Task
     ADD_CURRENT_SUBTASK(state, {id, subTask}: ISubTaskId) {
         if (state.current.subTasks == null) {
@@ -204,6 +236,10 @@ const actions: ActionTree<PendingState, any> = {
     updateCurrent: (context, id: string) => {
         context.commit('UPDATE_CURRENT_TASK', id);
         context.commit('SET_CURRENT_ID', id);
+    },
+
+    addCurrentDueTime: (context, time: number) => {
+        context.commit('ADD_CURRENT_DUE_TIME', time);
     },
 
     // SubTasks of Current Task

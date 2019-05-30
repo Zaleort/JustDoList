@@ -51,6 +51,10 @@
 
                 <label class="dialog-form-group">
                     <p class="dialog-form-name">Fecha límite</p>
+                    <div class="dialog-form-pending-time-group">
+                        <input v-model="deadlineDate" class="text-input" type="date" ref="dueDate">
+                        <input v-model="deadlineTime" class="text-input" type="time" ref="dueTime">
+                    </div>
                 </label>
 
                 <div class="dialog-form-group">
@@ -112,13 +116,13 @@ export default class TaskPendingDialog extends Vue {
     get tagCloud(): ITags {
         if (!this.$store.state.tag) { return {}; }
 
-        const ids = this.current.tags;
-        if (ids == null) { return {}; }
+        const currentTags = this.current.tags;
+        if (currentTags == null) { return {}; }
 
         const tags: ITags = {};
 
-        for (const id in this.$store.state.tag.tags) {
-            if (ids[id] != null) {
+        for (const id in currentTags) {
+            if (this.$store.state.tag.tags[id] != null) {
                 tags[id] = this.$store.state.tag.tags[id];
             }
         }
@@ -131,6 +135,56 @@ export default class TaskPendingDialog extends Vue {
 
         const all = this.$store.state.tag.tags;
         return all;
+    }
+
+    set deadlineDate(date: string) {
+        this.$store.commit('pending/SET_DEADLINE_DATE', date);
+    }
+
+    get deadlineDate(): string {
+        const date = new Date(this.current.dateDeadline);
+
+        if (date.getTime() <= 0) { return ''; }
+
+        const dayN = date.getDate();
+        const monthN = date.getMonth();
+        const year = date.getFullYear();
+
+        let month = (monthN + 1).toString();
+        let day = dayN.toString();
+
+        if (monthN + 1 < 10) {
+            month = '0' + (monthN + 1);
+        }
+
+        if (dayN < 10) {
+            day = '0' + dayN;
+        }
+
+        return `${year}-${month}-${day}`;
+    }
+
+    set deadlineTime(time: string) {
+        this.$store.commit('pending/SET_DEADLINE_TIME', time);
+    }
+
+    get deadlineTime(): string {
+        const date = new Date(this.current.dateDeadline);
+
+        if (date.getTime() <= 0) { return ''; }
+
+        let h = date.getHours().toString();
+        let m = date.getMinutes().toString();
+
+        if (h.length === 1) {
+            h = '0' + h;
+        }
+
+        if (m.length === 1) {
+            m = '0' + m;
+        }
+
+        return h + ':' + m;
     }
 
     private addSubTask(): void {

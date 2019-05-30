@@ -143,13 +143,13 @@ export default class TaskDailyDialog extends Vue {
     get tagCloud(): ITags {
         if (!this.$store.state.tag) { return {}; }
 
-        const ids = this.current.tags;
-        if (ids == null) { return {}; }
+        const currentTags = this.current.tags;
+        if (currentTags == null) { return {}; }
 
         const tags: ITags = {};
 
-        for (const id in this.$store.state.tag.tags) {
-            if (ids[id] != null) {
+        for (const id in currentTags) {
+            if (this.$store.state.tag.tags[id] != null) {
                 tags[id] = this.$store.state.tag.tags[id];
             }
         }

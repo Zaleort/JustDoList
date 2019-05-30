@@ -28,8 +28,8 @@
             <SubTask v-for="(subTask, key) in subTasks" :key="key" :id="key" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
         <div class="relative task-card-footer">
-            <span v-if="dateDeadline">
-                Finaliza el {{ dateDeadline }}
+            <span class="roboto task-full-date" v-if="dateDeadline">
+                {{ deadlineMessage }}
             </span>
             <div v-if="streak >= 0" class="task-streak-icon">
                 <span>{{ streak }}</span>
@@ -138,6 +138,18 @@ export default class Task extends Vue {
         }
 
         return tags.join(', ');
+    }
+
+    get deadlineMessage(): string {
+        const date = new Date(this.dateDeadline);
+        const day = date.getDate();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        return `${day}/${month + 1}/${year} ${hours}:${minutes}`;
     }
 
     private mounted(): void {
@@ -426,6 +438,12 @@ export default class Task extends Vue {
         display: flex;
         flex-direction: row-reverse;
         margin-top: 16px;
+    }
+
+    .task-full-date {
+        font-size: 0.85em;
+        color: $grey500;
+        margin-right: 7px;
     }
 
     .task-streak-icon {
