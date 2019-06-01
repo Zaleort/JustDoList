@@ -28,9 +28,12 @@
             <SubTask v-for="(subTask, key) in subTasks" :key="key" :id="key" v-bind="subTask" :taskId="id" :taskType="type" />
         </div>
         <div class="relative task-card-footer">
-            <span class="roboto task-full-date" v-if="dateDeadline">
-                {{ deadlineMessage }}
-            </span>
+            <div class="task-calendar-icon" v-if="dateDeadline">
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm436-44v-36c0-26.5-21.5-48-48-48h-48V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H160V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H48C21.5 64 0 85.5 0 112v36c0 6.6 5.4 12 12 12h424c6.6 0 12-5.4 12-12z"></path>
+                </svg>
+            </div>
+            <div class="tooltip roboto">{{ deadlineMessage }}</div>
             <div v-if="streak >= 0" class="task-streak-icon">
                 <span>{{ streak }}</span>
                 <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -149,7 +152,7 @@ export default class Task extends Vue {
         const hours = date.getHours();
         const minutes = date.getMinutes();
 
-        return `${day}/${month + 1}/${year} ${hours}:${minutes}`;
+        return `Finaliza el ${day}/${month + 1}/${year} a las ${hours}:${minutes}`;
     }
 
     private mounted(): void {
@@ -504,6 +507,21 @@ export default class Task extends Vue {
         padding: 9px 16px;
         border-radius: 5px;
         line-height: 1.33;
+    }
+
+    .task-calendar-icon {
+        fill: $grey400;
+        margin-right: 9px;
+        width: 14px;
+        height: 14px;
+    }
+
+    .task-calendar-icon:hover {
+        fill: $grey600;
+    }
+
+    .task-calendar-icon:hover + .tooltip {
+        visibility: visible;
     }
 
     @media only screen and (min-width: $laptop) {
