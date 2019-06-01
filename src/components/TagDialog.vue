@@ -47,17 +47,22 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
 import Tag from './Tag.vue';
+import { mapState } from 'vuex';
 
 @Component({
     components: { ModalDialog, Tag },
+
+    computed: {
+        ...mapState('tag', {
+            tags: (state: TagsState) => state.tags,
+        }),
+    },
 })
 
 export default class TagDialog extends Vue {
     @Prop() private show!: boolean;
 
-    get tags() {
-        return this.$store.state.tag.tags as ITags;
-    }
+    private tags!: ITags;
 
     private addTag(): void {
         let tag: ITag;

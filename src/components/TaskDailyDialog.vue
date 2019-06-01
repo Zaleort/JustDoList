@@ -104,9 +104,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
 import SearchSelect from './SearchSelect.vue';
 import Tag from './Tag.vue';
+import { mapState } from 'vuex';
 
 @Component({
     components: { ModalDialog, SearchSelect, Tag },
+
+    computed: {
+        ...mapState('daily', {
+            current: (state: DailyState) => state.current,
+            currentId: (state: DailyState) => state.currentId,
+            frecuency: (state: DailyState) => state.current.frecuency,
+        }),
+    },
 })
 
 export default class TaskDailyDialog extends Vue {
@@ -114,29 +123,25 @@ export default class TaskDailyDialog extends Vue {
     @Prop() private heading!: string;
     @Prop() private submitText!: string;
 
-    get current() {
-        return this.$store.state.daily.current;
-    }
-
-    get currentId(): string {
-        return this.$store.state.daily.currentId;
-    }
+    private current!: ITaskDaily;
+    private currentId!: string;
+    private frecuency!: string;
 
     set frecuencyNumber(fNumber: number) {
         this.$store.commit('daily/SET_CURRENT_FRECUENCY_NUMBER', fNumber);
     }
 
-    get frecuencyNumber() {
-        const current = this.$store.state.daily.current.frecuency;
-        return current.substring(1, current.length);
+    get frecuencyNumber(): number {
+        const current = this.frecuency;
+        return Number.parseInt(current.substring(1, current.length), 10);
     }
 
     set frecuencyType(type: string) {
         this.$store.commit('daily/SET_CURRENT_FRECUENCY_TYPE', type);
     }
 
-    get frecuencyType() {
-        const current = this.$store.state.daily.current.frecuency;
+    get frecuencyType(): string {
+        const current = this.frecuency;
         return current.charAt(0);
     }
 

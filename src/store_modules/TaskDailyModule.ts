@@ -116,6 +116,16 @@ const mutations: MutationTree<DailyState> = {
         if (task) {
             state.current = JSON.parse(JSON.stringify(task));
         }
+
+        // Corrige el problema de no escuchar a los cambios de estos atributos
+        // cuando la tarea desde la base de datos los tiene como undefined
+        if (state.current.subTasks == null) {
+            Vue.set(state.current, 'subTasks', {});
+        }
+
+        if (state.current.tags == null) {
+            Vue.set(state.current, 'tags', {});
+        }
     },
 
     SET_CURRENT_FRECUENCY_NUMBER(state, fNumber: string) {

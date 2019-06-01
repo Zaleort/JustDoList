@@ -96,9 +96,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import ModalDialog from './ModalDialog.vue';
 import SearchSelect from './SearchSelect.vue';
 import Tag from './Tag.vue';
+import { mapState } from 'vuex';
 
 @Component({
      components: { ModalDialog, SearchSelect, Tag },
+
+    computed: {
+        ...mapState('pending', {
+            current: (state: PendingState) => state.current,
+            currentId: (state: PendingState) => state.currentId,
+            currentSubTasks: (state: PendingState) => state.current.subTasks,
+        }),
+    },
 })
 
 export default class TaskPendingDialog extends Vue {
@@ -106,12 +115,8 @@ export default class TaskPendingDialog extends Vue {
     @Prop() private heading!: string;
     @Prop() private submitText!: string;
 
-    get current() {
-        return this.$store.state.pending.current;
-    }
-    get currentId(): string {
-        return this.$store.state.pending.currentId;
-    }
+    private current!: ITaskPending;
+    private currentId!: string;
 
     get tagCloud(): ITags {
         if (!this.$store.state.tag) { return {}; }

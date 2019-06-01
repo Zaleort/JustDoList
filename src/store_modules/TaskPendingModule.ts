@@ -97,6 +97,14 @@ const mutations: MutationTree<PendingState> = {
         if (task) {
             state.current = JSON.parse(JSON.stringify(task));
         }
+
+        if (state.current.subTasks == null) {
+            Vue.set(state.current, 'subTasks', {});
+        }
+
+        if (state.current.tags == null) {
+            Vue.set(state.current, 'tags', {});
+        }
     },
 
     SET_DEADLINE_DATE(state, date: string) {
