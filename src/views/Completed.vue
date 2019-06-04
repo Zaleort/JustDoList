@@ -3,7 +3,6 @@
         <div class="tasks-view-heading-container">
             <h1 class="font-primary">Completadas</h1>
             <div class="filter-container">
-                <input class="search-box text-input" type="search" placeholder="Buscar...">
             </div>
         </div>
         <transition-group

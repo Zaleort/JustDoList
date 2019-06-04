@@ -29,7 +29,7 @@
         </div>
         <div class="relative task-card-footer">
             <div class="task-calendar-icon" v-if="dateDeadline">
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <svg :class="{ 'icon-danger': deadlineSoon }" ref="calendarIcon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path d="M12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm436-44v-36c0-26.5-21.5-48-48-48h-48V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H160V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H48C21.5 64 0 85.5 0 112v36c0 6.6 5.4 12 12 12h424c6.6 0 12-5.4 12-12z"></path>
                 </svg>
             </div>
@@ -144,19 +144,44 @@ export default class Task extends Vue {
     }
 
     get deadlineMessage(): string {
+        if (this.dateDeadline == null || this.dateDeadline === 0) { return ''; }
+
         const date = new Date(this.dateDeadline);
+        const today = new Date();
         const day = date.getDate();
         const month = date.getMonth();
         const year = date.getFullYear();
 
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
+        let h = date.getHours().toString();
+        let m = date.getMinutes().toString();
 
-        return `Finaliza el ${day}/${month + 1}/${year} a las ${hours}:${minutes}`;
+        if (h.length === 1) {
+            h = '0' + h;
+        }
+
+        if (m.length === 1) {
+            m = '0' + m;
+        }
+
+        if (date.getTime() - today.getTime() < 0) {
+            return `Finalizó el ${day}/${month + 1}/${year} a las ${h}:${m}`;
+        }
+
+        return `Finaliza el ${day}/${month + 1}/${year} a las ${h}:${m}`;
+    }
+
+    get deadlineSoon(): boolean {
+        if (this.dateDeadline == null || this.dateDeadline === 0) { return false; }
+
+        const due = this.dateDeadline;
+        const today = new Date();
+
+        return (due - today.getTime()) < 8.64e7
     }
 
     private mounted(): void {
         this.refreshTask();
+        this.checkDueDate();
     }
 
     private completeTask(): void {
@@ -247,6 +272,18 @@ export default class Task extends Vue {
             default: {
                 return false;
             }
+        }
+    }
+
+    private checkDueDate() {
+        if (this.dateDeadline == null || this.dateDeadline === 0) { return; }
+
+        const due = this.dateDeadline;
+        const today = new Date();
+
+        if ((due - today.getTime()) < 8.64e7) {
+            console.log('hello');
+            (this.$refs.calendarIcon as HTMLElement).classList.add('icon-danger');
         }
     }
 
@@ -437,7 +474,7 @@ export default class Task extends Vue {
         color: $grey400;
     }
 
-    .task-card-footer {
+    .task-card-footer, .task-completed-card-footer {
         display: flex;
         flex-direction: row-reverse;
         margin-top: 16px;
@@ -525,7 +562,7 @@ export default class Task extends Vue {
     }
 
     @media only screen and (min-width: $laptop) {
-        .task-card-footer {
+        .task-completed-card-footer {
             margin-top: auto;
         }
     }

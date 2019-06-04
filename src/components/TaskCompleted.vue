@@ -19,7 +19,8 @@
             </span>
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
-        <div class="task-card-footer">
+        <div class="mb-2"></div>
+        <div class="task-completed-card-footer">
             <span class="roboto task-full-date" v-if="dateCompleted">
                 {{ fullDate }}
             </span>
