@@ -1,8 +1,8 @@
 <template>
-    <div class="card task-card" ref="task">
+    <div class="card task-card" :class="borderColor" ref="task">
         <div class="card-header">
             <div class="checkbox-group">
-                <button @click="completeTask" class="checkbox-button checkbox-indicator" :class="{ checked: completed }"></button>
+                <button aria-label="boton-completar-tarea" @click="completeTask" class="checkbox-button checkbox-indicator" :class="[checked, borderColor]"></button>
                 <p @click="openEditTask" class="checkbox-title">{{ name }}</p>
             </div>
             <span @click="toggleSubTasks" v-if="hasSubTasks" class="icon expand-icon" ref="expandIcon">
@@ -25,7 +25,13 @@
         </div>
         <p v-if="hasNotes" class="task-notes">{{ notes }}</p>
         <div ref="subTasks" class="task-subtasks-list" v-if="hasSubTasks">
-            <SubTask v-for="(subTask, key) in subTasks" :key="key" :id="key" v-bind="subTask" :taskId="id" :taskType="type" />
+            <SubTask v-for="(subTask, key) in subTasks" 
+                :key="key" 
+                :id="key" 
+                v-bind="subTask" 
+                :taskId="id" 
+                :taskType="type"
+                :taskColor="borderColor" />
         </div>
         <div class="relative task-card-footer">
             <div class="task-calendar-icon" v-if="dateDeadline">
@@ -69,7 +75,8 @@ export default class Task extends Vue {
     }}) private subTasks!: ISubTasks;
     @Prop({default() {
         return {};
-    }}) private tags!: any;
+    }}) private tags!: ITags;
+    @Prop() private favoriteTag!: string;
 
     @Prop() private frecuency!: string;
     @Prop() private streak!: number;
@@ -80,18 +87,10 @@ export default class Task extends Vue {
     @Prop() private dateLastCompleted!: number;
     @Prop() private dateDeadline!: number;
 
-    @Prop({ default: false })private completed!: boolean;
+    @Prop({ default: false }) private completed!: boolean;
     private showOptionsMenu: boolean = false;
 
     get options() {
-        let isDisabled;
-
-        if (this.type === 'pending') {
-            isDisabled = Object.keys(this.$store.state.pending.tasks).length <= 1;
-        } else if (this.type === 'daily') {
-            isDisabled = Object.keys(this.$store.state.daily.tasks).length <= 1;
-        }
-
         return [
             {
                 name: 'Editar',
@@ -99,21 +98,22 @@ export default class Task extends Vue {
                 disabled: false,
             },
             {
-                name: 'Mover arriba',
-                src: require('../assets/arrow-up-solid.svg'),
-                disabled: isDisabled,
-            },
-            {
-                name: 'Mover abajo',
-                src: require('../assets/arrow-down-solid.svg'),
-                disabled: isDisabled,
-            },
-            {
                 name: 'Borrar',
                 src: require('../assets/trash-solid.svg'),
                 disabled: false,
             },
         ];
+    }
+
+    get borderColor(): string {
+        if (!this.$store.state.tag.tags[this.favoriteTag]) { return 'border-purple'; }
+
+        return 'border-' + this.$store.state.tag.tags[this.favoriteTag].color;
+    }
+
+    get checked(): string {
+        if (this.completed) { return 'checked'; }
+        return '';
     }
 
     get hasNotes(): boolean {
@@ -176,7 +176,7 @@ export default class Task extends Vue {
         const due = this.dateDeadline;
         const today = new Date();
 
-        return (due - today.getTime()) < 8.64e7
+        return (due - today.getTime()) < 8.64e7;
     }
 
     private mounted(): void {
@@ -282,7 +282,6 @@ export default class Task extends Vue {
         const today = new Date();
 
         if ((due - today.getTime()) < 8.64e7) {
-            console.log('hello');
             (this.$refs.calendarIcon as HTMLElement).classList.add('icon-danger');
         }
     }
@@ -303,12 +302,6 @@ export default class Task extends Vue {
                 this.openEditTask();
                 break;
             case 1:
-                this.moveTaskUp();
-                break;
-            case 2:
-                this.moveTaskDown();
-                break;
-            case 3:
                 this.deleteTask();
                 break;
         }
@@ -336,7 +329,7 @@ export default class Task extends Vue {
 
     .task-notes {
         font-size: 0.8em;
-        word-break: break-all;
+        word-wrap: break-word;
         color: $grey700;
         margin-top: 12px;
         margin-bottom: 0;
@@ -416,10 +409,6 @@ export default class Task extends Vue {
         outline: none;
     }
 
-    .checkbox-button.checked {
-        border-color: $primary;
-    }
-
     .checkbox-indicator, .checkbox-indicator--sm {
         position: relative;
         border: 1px solid $grey300;
@@ -441,7 +430,7 @@ export default class Task extends Vue {
         opacity: 0;
         content: '';
         transform: rotate(45deg);
-        border: solid $primary;
+        border-style: solid;
         transition: all 0.1s;
     }
 
@@ -460,10 +449,6 @@ export default class Task extends Vue {
         height: 10px;
         border-width: 0 2px 2px 0;
     }
-
-    .checkbox:checked ~ .checkbox-indicator, .checkbox:checked ~ .checkbox-indicator--sm {
-        border-color: $primary;
-    } 
 
     .checkbox:checked ~ .checkbox-indicator::after, .checkbox:checked ~ .checkbox-indicator--sm::after, 
     .checked.checkbox-indicator::after, .checked.checkbox-indicator--sm::after {

@@ -12,7 +12,8 @@ interface ITaskDaily {
     name: string;
     notes?: string;
     subTasks?: ISubTasks;
-    tags?: {};
+    tags?: ITagArray;
+    favoriteTag?: string;
     frecuency?: string;
     streak: number;
     completed?: boolean;

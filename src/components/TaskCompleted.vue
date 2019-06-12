@@ -1,8 +1,8 @@
 <template>
-    <div class="card task-card" ref="task">
+    <div class="card task-card" :class="borderColor" ref="task">
         <div class="card-header">
             <div class="checkbox-group">
-                <button @click="undoComplete" class="checkbox-button checkbox-indicator" :class="{ checked: completed }"></button>
+                <button @click="undoComplete" class="checkbox-button checkbox-indicator" :class="[checked, borderColor]"></button>
                 <p class="checkbox-title">{{ name }}</p>
             </div>
             <span class="task-options-icon">
@@ -51,7 +51,8 @@ export default class TaskCompleted extends Vue {
     }}) private subTasks!: ISubTasks;
     @Prop({default() {
         return {};
-    }}) private tags!: any;
+    }}) private tags!: ITags;
+    @Prop() private favoriteTag!: string;
 
     @Prop() private dateCreated!: number;
     @Prop() private dateUpdated!: number;
@@ -78,6 +79,17 @@ export default class TaskCompleted extends Vue {
                 disabled: false,
             },
         ];
+    }
+
+    get borderColor(): string {
+        if (!this.$store.state.tag.tags[this.favoriteTag]) { return 'border-purple'; }
+
+        return 'border-' + this.$store.state.tag.tags[this.favoriteTag].color;
+    }
+
+    get checked(): string {
+        if (this.completed) { return 'checked'; }
+        return '';
     }
 
     get hasNotes(): boolean {

@@ -82,20 +82,3 @@ textarea {
     top: 9px;
     right: 9px;
 }
-
-// Cards
-
-.card {
-    margin-top: 1em;
-    background-color: #ffffff;
-    border-color: $primary;
-    border-style: solid;
-    border-width: 0 0 0 9px;
-
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-}

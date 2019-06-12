@@ -85,6 +85,7 @@
                                 :id="id"
                                 v-bind="tag"
                                 :isModal="true"
+                                :isFavorite="id === current.favoriteTag"
                                 :type="'daily'" />
                     </transition-group>
                 </div>
@@ -194,16 +195,24 @@ export default class TaskDailyDialog extends Vue {
 
     private addTag(id: string): void {
         this.$store.dispatch('daily/addCurrentTag', id);
+
+        if (this.current.favoriteTag == null) {
+            this.$store.commit('pending/SET_FAVORITE_TAG', id);
+        }
     }
 
     private addNewTag(name: string): void {
         const newTag = {
             name,
-            color: '#7400C9',
+            color: 'purple',
         } as ITag;
 
         this.$store.dispatch('tag/addTag', newTag).then((response) => {
             this.$store.dispatch('daily/addCurrentTag', response.id);
+
+            if (this.current.favoriteTag == null) {
+                this.$store.commit('pending/SET_FAVORITE_TAG', response.id);
+            }
         });
     }
 

@@ -13,7 +13,8 @@ interface ITaskPending {
     name: string;
     notes: string;
     subTasks?: ISubTasks;
-    tags?: {};
+    tags?: ITagArray;
+    favoriteTag?: string;
     completed?: boolean;
     dateCreated: number;
     dateUpdated: number;

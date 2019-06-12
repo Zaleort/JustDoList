@@ -149,6 +149,115 @@
 .icon-success { fill: $green800; }
 .icon-infor { fill: $blue800; }
 
+// Cards
+.card {
+    margin-top: 1em;
+    background-color: #ffffff;
+    border-color: $primary;
+    border-style: solid;
+    border-width: 0 0 0 9px;
+
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+}
+
+// Colores de Fondo
+.bg-red { background-color: $red500 }
+.bg-orange { background-color: $orange500 }
+.bg-yellow { background-color: $yellow700 }
+.bg-green { background-color: $green500 }
+.bg-teal { background-color: $teal500 }
+.bg-blue { background-color: $blue500 }
+.bg-indigo { background-color: $indigo500 }
+.bg-purple { background-color: $primary }
+.bg-pink { background-color: $pink500 }
+
+// Colores de los bordes
+.border-pink, .border-pink:checked ~ .checkbox.indicator, 
+    .border-pink:checked ~ .checkbox-indicator--sm, 
+    .border-pink ~ .checkbox.indicator::after, 
+    .border-pink ~ .checkbox-indicator--sm::after,
+    .border-pink.checked,
+    .border-pink::after { 
+        border-color: $pink500 
+}
+
+.border-purple, .border-purple:checked ~ .checkbox.indicator, 
+    .border-purple:checked ~ .checkbox-indicator--sm, 
+    .border-purple ~ .checkbox.indicator::after, 
+    .border-purple ~ .checkbox-indicator--sm::after,
+    .border-purple.checked,
+    .border-purple::after { 
+        border-color: $primary; 
+}
+
+.border-indigo, .border-indigo:checked ~ .checkbox.indicator, 
+    .border-indigo:checked ~ .checkbox-indicator--sm, 
+    .border-indigo ~ .checkbox.indicator::after, 
+    .border-indigo ~ .checkbox-indicator--sm::after,
+    .border-indigo.checked,
+    .border-indigo::after { 
+        border-color: $indigo500; 
+}
+
+.border-blue, .border-blue:checked ~ .checkbox.indicator, 
+    .border-blue:checked ~ .checkbox-indicator--sm, 
+    .border-blue ~ .checkbox.indicator::after, 
+    .border-blue ~ .checkbox-indicator--sm::after,
+    .border-blue.checked,
+    .border-blue::after { 
+        border-color: $blue500; 
+}
+
+.border-teal, .border-teal:checked ~ .checkbox.indicator, 
+    .border-teal:checked ~ .checkbox-indicator--sm, 
+    .border-teal ~ .checkbox.indicator::after, 
+    .border-teal ~ .checkbox-indicator--sm::after,
+    .border-teal.checked,
+    .border-teal::after { 
+        border-color: $teal500; 
+}
+
+.border-green, .border-green:checked ~ .checkbox.indicator, 
+    .border-green:checked ~ .checkbox-indicator--sm, 
+    .border-green ~ .checkbox.indicator::after, 
+    .border-green ~ .checkbox-indicator--sm::after,
+    .border-green.checked,
+    .border-green::after { 
+        border-color: $green500; 
+}
+
+.border-yellow, .border-yellow:checked ~ .checkbox.indicator, 
+    .border-yellow:checked ~ .checkbox-indicator--sm, 
+    .border-yellow ~ .checkbox.indicator::after, 
+    .border-yellow ~ .checkbox-indicator--sm::after,
+    .border-yellow.checked,
+    .border-yellow::after {
+        border-color: $yellow700; 
+}
+
+.border-orange, .border-orange:checked ~ .checkbox.indicator, 
+    .border-orange:checked ~ .checkbox-indicator--sm, 
+    .border-orange ~ .checkbox.indicator::after, 
+    .border-orange ~ .checkbox-indicator--sm::after,
+    .border-orange.checked,
+    .border-orange::after { 
+        border-color: $orange500; 
+}
+
+.border-red, .border-red:checked ~ .checkbox.indicator, 
+    .border-red:checked ~ .checkbox-indicator--sm, 
+    .border-red ~ .checkbox.indicator::after, 
+    .border-red ~ .checkbox-indicator--sm::after,
+    .border-red.checked,
+    .border-red::after { 
+        border-color: $red500;
+ }
+
 @media only screen and (min-width: $laptop) {
     .container {
         padding: 0 21px 0 225 + 21px;

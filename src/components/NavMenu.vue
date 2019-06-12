@@ -2,7 +2,7 @@
     <div class="nav-container" id="nav-menu">
         <nav class="nav-menu">
             <ul class="nav-menu-list">
-                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/tareas">Tareas</router-link></li>
+                <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/">Tareas</router-link></li>
                 <li @click="$store.dispatch('closeNav')"><router-link class="nav-menu-link" to="/completadas">Completadas</router-link></li>
             </ul>
         </nav>
@@ -89,7 +89,7 @@ export default class NavMenu extends Vue {
         background-color: $grey300;
     }
 
-    .router-link-active {
+    .router-link-exact-active {
         color: $grey800;
         background-color: $grey300;
         border-left-width: 7px;

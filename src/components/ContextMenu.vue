@@ -1,12 +1,31 @@
 <template>
     <div ref="menu" :class="'cm-container cm-' + position">
         <ul class="cm-list">
-            <li :class="checkDisabled(item.disabled)"
+            <li class="relative" :class="checkDisabled(item.disabled)"
                 @click="emitAction(item.disabled, index)"
                 v-for="(item, index) in items" 
                 :key="index">
                     <img class="cm-item-icon" :src="item.src" alt="">
                     <span>{{ item.name }}</span>
+                    <ul class="cm-sublist" v-if="item.subMenu && item.type !== 'color'">
+                        <li v-for="(sub, subIndex) in item.subMenu" 
+                            :key="subIndex"
+                            :class="checkDisabled(sub.disabled)" 
+                            @click="emitAction(item.disabled, index, subIndex)">
+                                <span>{{ sub.name }}</span>
+                        </li>
+                    </ul>
+                    <div class="cm-colorpicker" v-if="item.subMenu && item.type === 'color'">
+                        <div @click="emitColorChange(0)" class="bg-red"></div>
+                        <div @click="emitColorChange(1)" class="bg-orange"></div>
+                        <div @click="emitColorChange(2)" class="bg-yellow"></div>
+                        <div @click="emitColorChange(3)" class="bg-green"></div>
+                        <div @click="emitColorChange(4)" class="bg-teal"></div>
+                        <div @click="emitColorChange(5)" class="bg-blue"></div>
+                        <div @click="emitColorChange(6)" class="bg-indigo"></div>
+                        <div @click="emitColorChange(7)" class="bg-purple"></div>
+                        <div @click="emitColorChange(8)" class="bg-pink"></div>
+                    </div>
             </li>
         </ul>
     </div>
@@ -48,6 +67,11 @@ export default class ContextMenu extends Vue {
         if (isDisabled) { return; }
 
         this.$emit('action', index);
+        this.$emit('close');
+    }
+
+    private emitColorChange(index: number) {
+        this.$emit('color', index);
         this.$emit('close');
     }
 
@@ -103,5 +127,26 @@ export default class ContextMenu extends Vue {
     .cm-item-icon {
         width: 14px;
         margin-right: 7px;
+    }
+
+    .cm-colorpicker {
+        display: flex;
+        width: 90px;
+        flex-wrap: wrap;
+        visibility: hidden;
+        position: absolute;
+        left: -90px;
+        top: 0;
+
+        div {
+            cursor: pointer;
+            flex: 1 0 33%;
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    .cm-item:hover .cm-colorpicker {
+        visibility: visible;
     }
 </style>

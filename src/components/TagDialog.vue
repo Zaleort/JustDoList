@@ -72,7 +72,7 @@ export default class TagDialog extends Vue {
 
         tag = {
             name: tagName.value,
-            color: '#7400C9',
+            color: 'purple',
         };
 
         tagName.value = '';

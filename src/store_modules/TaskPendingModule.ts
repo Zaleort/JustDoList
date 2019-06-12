@@ -23,6 +23,7 @@ const pendingState: PendingState = {
         notes: '',
         subTasks: {},
         tags: {},
+        favoriteTag: '',
         completed: false,
         dateCreated: 0,
         dateUpdated: 0,
@@ -81,6 +82,7 @@ const mutations: MutationTree<PendingState> = {
             notes: '',
             subTasks: {},
             tags: {},
+            favoriteTag: '',
             completed: false,
             dateCreated: 0,
             dateUpdated: 0,
@@ -175,16 +177,47 @@ const mutations: MutationTree<PendingState> = {
     DELETE_CURRENT_TAG(state, tagId: string) {
         if (state.current.tags != null) {
             Vue.delete(state.current.tags, tagId);
+
+            if (state.current.favoriteTag === tagId) {
+                // tslint:disable-next-line:forin
+                for (const id of Object.keys(state.current.tags)) {
+                    state.current.favoriteTag = id;
+                    return;
+                }
+            }
         }
     },
 
     // Tags
     CLEAN_TAGS(state, id: string) {
-        for (const key in state.tasks) {
-            if (state.tasks[key].tags != null) {
-                Vue.delete(state.tasks[key].tags!, id);
+        const t = state.tasks;
+        for (const key in t) {
+            const task = t[key];
+            if (task.tags != null) {
+                if (task.tags[id]) {
+                    Vue.delete(task.tags, id);
+
+                    if (task.favoriteTag === id) {
+                        task.favoriteTag = '';
+                        // tslint:disable-next-line:forin
+                        for (const tagId of Object.keys(task.tags)) {
+                            task.favoriteTag = tagId;
+                            Vue.set(state.tasks, key, task);
+                            return;
+                        }
+
+                        firebase.database().ref('pending/' + key).update({ favoriteTag: task.favoriteTag});
+                    }
+
+                    firebase.database().ref('pending/' + key + '/tags/' + id).remove();
+                }
             }
         }
+    },
+
+    SET_FAVORITE_TAG(state, tagId: string) {
+        if (state.current.tags == null) { return; }
+        state.current.favoriteTag = tagId;
     },
 
     // Completed Tasks
@@ -271,6 +304,10 @@ const actions: ActionTree<PendingState, any> = {
 
     deleteCurrentTag: (context, tagId: string) => {
         context.commit('DELETE_CURRENT_TAG', tagId);
+    },
+
+    cleanTags: (context, tagId: string) => {
+        context.commit('CLEAN_TAGS', tagId);
     },
 
     // Completed tasks

@@ -1,6 +1,6 @@
 <template>
     <label class="checkbox-group--sm">
-        <input @change="updateCheck" ref="checkbox" class="checkbox" :disabled="isCompleted" type="checkbox" :checked="checked">
+        <input @change="updateCheck" ref="checkbox" class="checkbox" :class="taskColor" :disabled="isCompleted" type="checkbox" :checked="checked">
         <div class="checkbox-indicator--sm"></div>
         <p class="checkbox-title">{{ name }}</p>
     </label>
@@ -15,6 +15,7 @@ export default class SubTask extends Vue {
     @Prop() private name!: string;
     @Prop() private checked!: boolean;
     @Prop() private taskId!: string;
+    @Prop({default: 'border-purple'}) private taskColor!: string;
     @Prop() private taskType!: string;
 
     get isCompleted() {

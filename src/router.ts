@@ -7,7 +7,7 @@ Vue.use(Router);
 export default new Router({
     routes: [
         {
-            path: '/tareas',
+            path: '/',
             name: 'tareas',
             component: TasksView,
         },

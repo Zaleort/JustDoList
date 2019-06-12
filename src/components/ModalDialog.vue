@@ -42,6 +42,7 @@ export default class ModalDialog extends Vue {
     width: 100%;
     height: 100%;
     z-index: 200;
+    overflow-y: scroll;
     background-color: black;
     background-color: rgba(0, 0, 0, 0.33);
     transition: all 0.25s ease-out;
@@ -49,10 +50,8 @@ export default class ModalDialog extends Vue {
 
 .dialog-content {
     z-index: 201;
-    margin: 4em auto;
+    margin: auto;
     max-width: $mobile-l;
-    max-height: calc(100vh - 24px);
-    overflow-y: auto;
     background-color: #fefefe;
     border-radius: 3px;
 }

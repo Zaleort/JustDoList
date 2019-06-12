@@ -10,3 +10,7 @@ interface ITag {
 interface TagsState {
     tags: ITags;
 }
+
+interface ITagArray {
+    [id: string]: boolean;
+}
