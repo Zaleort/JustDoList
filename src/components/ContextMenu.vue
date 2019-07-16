@@ -2,7 +2,7 @@
     <div ref="menu" :class="'cm-container cm-' + position">
         <ul class="cm-list">
             <li class="relative" :class="checkDisabled(item.disabled)"
-                @click="emitAction(item.disabled, index)"
+                @click="emitAction(item, index)"
                 v-for="(item, index) in items" 
                 :key="index">
                     <img class="cm-item-icon" :src="item.src" alt="">
@@ -11,7 +11,7 @@
                         <li v-for="(sub, subIndex) in item.subMenu" 
                             :key="subIndex"
                             :class="checkDisabled(sub.disabled)" 
-                            @click="emitAction(item.disabled, index, subIndex)">
+                            @click="emitAction(item, index, subIndex)">
                                 <span>{{ sub.name }}</span>
                         </li>
                     </ul>
@@ -33,6 +33,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import '../interfaces/IContextMenuItem';
 
 @Component
 export default class ContextMenu extends Vue {
@@ -63,8 +64,8 @@ export default class ContextMenu extends Vue {
         return 'cm-item';
     }
 
-    private emitAction(isDisabled: boolean, index: number) {
-        if (isDisabled) { return; }
+    private emitAction(item: IContextMenuItem, index: number) {
+        if (item.disabled || !item.clickable) { return; }
 
         this.$emit('action', index);
         this.$emit('close');

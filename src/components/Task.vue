@@ -90,17 +90,19 @@ export default class Task extends Vue {
     @Prop({ default: false }) private completed!: boolean;
     private showOptionsMenu: boolean = false;
 
-    get options() {
+    get options(): IContextMenuItem[] {
         return [
             {
                 name: 'Editar',
                 src: require('../assets/pen-solid.svg'),
                 disabled: false,
+                clickable: true,
             },
             {
                 name: 'Borrar',
                 src: require('../assets/trash-solid.svg'),
                 disabled: false,
+                clickable: true,
             },
         ];
     }

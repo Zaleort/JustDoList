@@ -77,6 +77,7 @@ export default class TaskCompleted extends Vue {
                 name: 'Borrar',
                 src: require('../assets/trash-solid.svg'),
                 disabled: false,
+                clickable: true,
             },
         ];
     }

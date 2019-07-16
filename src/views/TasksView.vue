@@ -11,52 +11,50 @@
                 </button>
             </div>
         </div>
-        <transition-group
-            name="task-transition"
-            tag="section"
-            class="tasks-section"
-            enter-active-class="animate fastest fade-in-up-slight"
-            leave-active-class="absolute animate fastest fade-out"
-            move-class="move">
+        <section class="tasks-section">
 
             <!-- Tareas Diarias -->
-            <section class="tasks-daily-section" :key="'daily'">
-                <div class="tasks-header">
+            <transition-group
+                tag="section" 
+                name="task-transition"
+                enter-active-class="animate faster fade-in-up-slight"
+                leave-active-class="absolute animate fastest fade-out"
+                move-class="move"
+                class="tasks-daily-section">
+
+                <div class="tasks-header" :key="'header'">
                     <h2 class="tasks-heading">Tareas diarias</h2>
                     <img @click="openDailyDialog(false)" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tarea diaria">
                 </div>
-                <transition-group
-                    name="task-transition"
-                    enter-active-class="animate faster fade-in-up-slight"
-                    leave-active-class="absolute animate fastest fade-out"
-                    move-class="move">
-                    <div class="alert-info mt-1" v-if="!dailyTasks || Object.keys(dailyTasks).length === 0" :key="'info'">
-                        <p>
-                            Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarias se reinician automáticamente
-                            a medianoche y llevan un seguimiento de tu racha.
-                        </p>
-                    </div>
-                    <Task @openDialog="openDailyDialog(true)" v-for="(task, id) of dailyTasks" :key="id" :id="id" v-bind="task" :type="'daily'"/>
-                </transition-group>
-            </section>
+                <div class="alert-info mt-1" v-if="!dailyTasks || Object.keys(dailyTasks).length === 0" :key="'info'">
+                    <p>
+                        Haz click en el botón + para añadir una nueva tarea diaria. Las tareas diarias se reinician automáticamente
+                        a medianoche y llevan un seguimiento de tu racha.
+                    </p>
+                </div>
+                <Task @openDialog="openDailyDialog(true)" v-for="(task, id) of dailyTasks" :key="id" :id="id" v-bind="task" :type="'daily'"/>
+
+            </transition-group>
 
             <!-- Tareas Pendientes -->
-            <section class="tasks-pending-section" :key="'pending'">
-                <div class="tasks-header">
+            <transition-group
+                tag="section" 
+                name="task-transition"
+                enter-active-class="animate faster fade-in-up-slight"
+                leave-active-class="absolute animate fastest fade-out"
+                move-class="move"
+                class="tasks-pending-section">
+                
+                <div class="tasks-header" :key="'header'">
                     <h2 class="tasks-heading">Tareas pendientes</h2>
                     <img @click="openPendingDialog(false)" 
                         class="icon add-icon" 
                         src="../assets/add_circle.svg" 
                         alt="Añadir tare pendiente">
                 </div>
-                <transition-group
-                    name="task-transition"
-                    enter-active-class="animate faster fade-in-up-slight"
-                    leave-active-class="absolute animate fastest fade-out"
-                    move-class="move">
                     <div class="alert-info mt-1" v-if="Object.keys(pendingTasks).length === 0 || !pendingTasks" :key="'info'">
                         <p>
                             Haz click en el botón + para añadir una nueva tarea pendiente. Puedes especificar un plazo para terminar
@@ -64,9 +62,8 @@
                         </p>
                     </div>
                     <Task @openDialog="openPendingDialog(true)" v-for="(task, id) in pendingTasks" :key="id" :id="id" v-bind="task" :type="'pending'"/>
-                </transition-group>
-            </section>
-        </transition-group>
+            </transition-group>
+        </section>
 
         <TaskPendingDialog :show="showTaskPendingDialog" 
             @close="showTaskPendingDialog = false" 
@@ -143,7 +140,7 @@ export default class TasksView extends Vue {
     @import '../scss/variables';
 
     .tasks-section {
-        padding-bottom: 4em;
+        padding-bottom: 2em;
     }
 
     .tasks-heading {

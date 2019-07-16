@@ -1,10 +1,11 @@
 <template>
     <main class="container">
-        <div class="tasks-view-heading-container">
+        <div class="tasks-view-heading-container" :key="'header'">
             <h1 class="font-primary">Completadas</h1>
             <div class="filter-container">
             </div>
         </div>
+
         <transition-group
             name="task-transition"
             tag="section"
@@ -12,6 +13,7 @@
             enter-active-class="animate fastest fade-in-up-slight"
             leave-active-class="absolute animate fastest fade-out"
             move-class="move">
+
             <div class="full-width alert-info mt-1" v-if="Object.keys(completed).length === 0 || !completed" :key="'info'">
                 <p>
                     Este es tu historial de tareas completadas. Desde aquí puedes devolver tus tareas a pendientes. ¡Completa una

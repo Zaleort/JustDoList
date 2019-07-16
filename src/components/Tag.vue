@@ -49,10 +49,11 @@ export default class Tag extends Vue {
 
     private showOptionsMenu: boolean = false;
     private onFocus: boolean = false;
-    private options: object[] = [
+    private options: IContextMenuItem[] = [
         {
             name: 'Editar',
             src: require('../assets/pen-solid.svg'),
+            clickable: true,
         },
         {
             name: 'Color',
@@ -69,10 +70,12 @@ export default class Tag extends Vue {
                 { name: 'Rosa' },
             ],
             type: 'color',
+            clickable: false,
         },
         {
             name: 'Borrar',
             src: require('../assets/trash-solid.svg'),
+            clickable: true,
         },
     ];
 
